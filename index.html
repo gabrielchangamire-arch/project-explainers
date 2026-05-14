@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Project Explainers — Gabriel Changamire</title>
+<meta name="description" content="Interactive walkthroughs of three production-shaped projects: a FastAPI task manager API, a distributed job-queue system, and the React dashboard that consumes the API."/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0b0d10;
+  --bg-elev: #11141a;
+  --bg-elev-2: #161a22;
+  --fg: #e6e7ea;
+  --fg-dim: #8a8f99;
+  --fg-faint: #4a4f5a;
+  --accent: #ffb454;
+  --accent-glow: rgba(255, 180, 84, 0.18);
+  --good: #7cd17c;
+  --bad: #e06c75;
+  --wire: #2a2f3a;
+  --wire-hot: #ffb454;
+  --purple: #c792ea;
+  --teal: #5ad3b5;
+  --blue: #6ab0ff;
+  --coral: #e06c75;
+  --font-display: 'Syne', serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--bg); color: var(--fg); font-family: var(--font-mono); font-size: 15px; line-height: 1.55; min-height: 100vh; overflow-x: hidden; }
+body::before {
+  content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.07;
+  background-image: linear-gradient(var(--wire) 1px, transparent 1px), linear-gradient(90deg, var(--wire) 1px, transparent 1px);
+  background-size: 80px 80px;
+}
+.app { position: relative; z-index: 1; max-width: 1320px; margin: 0 auto; padding: 40px 28px 80px; }
+@media (max-width: 640px) { .app { padding: 24px 16px 60px; } }
+
+/* Header */
+header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 36px; border-bottom: 1px solid var(--wire); padding-bottom: 18px; flex-wrap: wrap; gap: 16px; }
+.brand { font-family: var(--font-display); font-weight: 800; font-size: 22px; letter-spacing: -0.02em; cursor: pointer; color: var(--fg); text-decoration: none; }
+.brand .dot { display: inline-block; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; margin-right: 10px; box-shadow: 0 0 12px var(--accent-glow); animation: pulse 2.4s ease-in-out infinite; vertical-align: middle; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+.crumbs { color: var(--fg-dim); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; }
+.crumbs span.active { color: var(--accent); }
+.crumbs .sep { color: var(--fg-faint); margin: 0 8px; }
+.nav-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+.nav-pill { font-family: var(--font-mono); font-size: 12px; padding: 6px 12px; border: 1px solid var(--wire); border-radius: 999px; color: var(--fg-dim); background: transparent; cursor: pointer; transition: all 0.15s; text-decoration: none; }
+.nav-pill:hover { color: var(--fg); border-color: var(--fg-dim); }
+.nav-pill.active { color: var(--accent); border-color: var(--accent); background: var(--accent-glow); }
+
+/* Screen system */
+.screen { display: none; animation: fadeIn 0.4s ease-out; }
+.screen.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Landing hero */
+.hero h1 { font-family: var(--font-display); font-size: clamp(40px, 6.5vw, 80px); font-weight: 800; letter-spacing: -0.035em; line-height: 0.95; margin-bottom: 20px; }
+.hero h1 em { font-style: normal; color: var(--accent); display: block; }
+.hero .lead { color: var(--fg-dim); font-size: clamp(15px, 1.4vw, 17px); max-width: 720px; margin-bottom: 36px; line-height: 1.65; }
+.hero .lead b { color: var(--fg); font-weight: 500; }
+
+/* Project picker cards */
+.project-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px; margin-bottom: 40px; }
+.proj-card { background: var(--bg-elev); border: 1px solid var(--wire); border-radius: 14px; padding: 26px 24px; cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden; text-decoration: none; color: var(--fg); display: flex; flex-direction: column; gap: 12px; min-height: 240px; }
+.proj-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); transform: scaleX(0); transform-origin: left; transition: transform 0.4s; }
+.proj-card:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 20px 60px rgba(255, 180, 84, 0.08); }
+.proj-card:hover::before { transform: scaleX(1); }
+.proj-card .tag { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); }
+.proj-card h2 { font-family: var(--font-display); font-size: 24px; font-weight: 700; letter-spacing: -0.015em; line-height: 1.15; }
+.proj-card p { color: var(--fg-dim); font-size: 13.5px; line-height: 1.6; flex: 1; }
+.proj-card .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; }
+.proj-card .chip { font-size: 11px; padding: 3px 9px; border: 1px solid var(--wire); border-radius: 999px; color: var(--fg-dim); }
+.proj-card .open-cue { font-size: 12px; color: var(--accent); display: inline-flex; align-items: center; gap: 6px; }
+
+/* Generic section blocks */
+.section { margin-bottom: 56px; }
+.section-title { font-family: var(--font-display); font-size: 14px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+.section-title::before { content: ''; width: 24px; height: 1px; background: var(--accent); }
+.section-sub { color: var(--fg-dim); font-size: 14px; margin-bottom: 24px; max-width: 720px; line-height: 1.65; }
+
+/* Project hero */
+.proj-hero { display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: end; margin-bottom: 48px; padding-bottom: 28px; border-bottom: 1px solid var(--wire); }
+@media (max-width: 700px) { .proj-hero { grid-template-columns: 1fr; align-items: start; } }
+.proj-hero .label { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--fg-dim); margin-bottom: 14px; }
+.proj-hero h1 { font-family: var(--font-display); font-size: clamp(32px, 5vw, 52px); font-weight: 800; letter-spacing: -0.025em; line-height: 1.05; margin-bottom: 16px; }
+.proj-hero .tagline { color: var(--fg-dim); font-size: 15px; line-height: 1.6; max-width: 720px; margin-bottom: 18px; }
+.proj-hero .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.proj-hero .chips .chip { font-size: 11px; padding: 4px 10px; border: 1px solid var(--wire); border-radius: 999px; color: var(--fg-dim); }
+.proj-hero .chips .chip.hot { color: var(--accent); border-color: var(--accent); }
+.proj-hero .external { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--fg-dim); text-decoration: none; padding: 7px 12px; border: 1px solid var(--wire); border-radius: 999px; transition: all 0.15s; }
+.proj-hero .external:hover { color: var(--accent); border-color: var(--accent); }
+.proj-hero .actions { display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap; }
+
+/* Architecture diagram */
+.arch-wrap { background: var(--bg-elev); border: 1px solid var(--wire); border-radius: 14px; padding: 24px; overflow: hidden; position: relative; }
+.arch-svg { width: 100%; height: auto; display: block; }
+.arch-box { fill: var(--bg-elev-2); stroke: var(--wire); stroke-width: 1; transition: all 0.3s; }
+.arch-box.active { fill: rgba(255, 180, 84, 0.08); stroke: var(--accent); stroke-width: 1.5; }
+.arch-box.ext { fill: var(--bg); stroke: var(--wire); stroke-dasharray: 4 4; }
+.arch-box.ext.active { fill: rgba(255, 180, 84, 0.06); stroke: var(--accent); }
+.arch-label { font-family: var(--font-mono); font-size: 11px; fill: var(--fg); font-weight: 500; pointer-events: none; }
+.arch-sub { font-family: var(--font-mono); font-size: 9px; fill: var(--fg-dim); pointer-events: none; }
+.arch-line { stroke: var(--wire); stroke-width: 1; fill: none; transition: all 0.3s; }
+.arch-line.active { stroke: var(--accent); stroke-width: 1.8; }
+.arch-line.dash { stroke-dasharray: 3 4; }
+.arch-arrow { fill: var(--wire); transition: fill 0.3s; }
+.arch-arrow.active { fill: var(--accent); }
+.arch-legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 16px; font-size: 11px; color: var(--fg-dim); padding-top: 14px; border-top: 1px solid var(--wire); }
+.arch-legend .item { display: inline-flex; align-items: center; gap: 6px; }
+.arch-legend .swatch { width: 14px; height: 9px; border-radius: 2px; display: inline-block; }
+.arch-legend .swatch.app { background: var(--bg-elev-2); border: 1px solid var(--wire); }
+.arch-legend .swatch.ext { background: var(--bg); border: 1px dashed var(--fg-faint); }
+.arch-legend .swatch.flow { background: var(--accent); }
+
+/* File panel */
+.files-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+.file-card { background: var(--bg-elev); border: 1px solid var(--wire); border-radius: 12px; padding: 18px; transition: all 0.2s; }
+.file-card:hover { border-color: var(--fg-dim); }
+.file-card .path { font-family: var(--font-mono); font-size: 12px; color: var(--accent); margin-bottom: 10px; word-break: break-all; }
+.file-card .role { color: var(--fg-dim); font-size: 13px; line-height: 1.6; }
+.file-card .role code { background: var(--bg); padding: 1px 6px; border-radius: 4px; font-size: 11.5px; color: var(--fg); }
+
+/* Flow stepper */
+.flow-wrap { background: var(--bg-elev); border: 1px solid var(--wire); border-radius: 14px; padding: 24px; }
+.flow-controls { display: flex; gap: 8px; align-items: center; margin-bottom: 22px; padding-bottom: 18px; border-bottom: 1px solid var(--wire); flex-wrap: wrap; }
+.flow-btn { font: inherit; font-size: 12px; padding: 8px 16px; border: 1px solid var(--wire); border-radius: 999px; color: var(--fg-dim); background: transparent; cursor: pointer; transition: all 0.15s; }
+.flow-btn:hover:not(:disabled) { color: var(--fg); border-color: var(--fg-dim); }
+.flow-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.flow-btn.primary { background: var(--accent); color: #0b0d10; border-color: var(--accent); font-weight: 600; }
+.flow-btn.primary:hover:not(:disabled) { background: #ffc572; color: #0b0d10; }
+.flow-pos { font-size: 12px; color: var(--fg-dim); margin-left: auto; }
+.flow-pos .now { color: var(--accent); font-weight: 700; }
+.flow-step { display: grid; grid-template-columns: 60px 1fr; gap: 18px; align-items: start; padding: 14px 0; }
+.flow-step .n { font-family: var(--font-display); font-size: 24px; font-weight: 800; color: var(--fg-faint); transition: color 0.3s; }
+.flow-step.current .n { color: var(--accent); }
+.flow-step .body h4 { font-size: 14px; margin-bottom: 6px; color: var(--fg); }
+.flow-step .body p { color: var(--fg-dim); font-size: 13px; line-height: 1.6; }
+.flow-step .body code { background: var(--bg); padding: 1px 6px; border-radius: 4px; font-size: 11.5px; color: var(--accent); }
+
+/* Footer */
+footer { margin-top: 60px; padding-top: 24px; border-top: 1px solid var(--wire); font-size: 12px; color: var(--fg-dim); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+footer a { color: var(--fg-dim); text-decoration: none; border-bottom: 1px solid transparent; transition: all 0.15s; }
+footer a:hover { color: var(--accent); border-color: var(--accent); }
+
+/* Note block */
+.note { background: var(--bg-elev); border-left: 3px solid var(--accent); padding: 12px 16px; font-size: 12.5px; color: var(--fg-dim); margin-top: 24px; border-radius: 4px; }
+.note b { color: var(--fg); }
+</style>
+</head>
+<body>
+<div class="app">
+
+<header>
+  <a class="brand" href="#" onclick="navigate('home'); return false;"><span class="dot"></span>Project Explainers</a>
+  <div class="nav-pills" id="navPills">
+    <a class="nav-pill" data-screen="home" href="#" onclick="navigate('home'); return false;">Home</a>
+    <a class="nav-pill" data-screen="aws-task-manager-api" href="#aws-task-manager-api">AWS Task API</a>
+    <a class="nav-pill" data-screen="distributed-job-queue-system" href="#distributed-job-queue-system">Job Queue</a>
+    <a class="nav-pill" data-screen="react-task-manager-dashboard" href="#react-task-manager-dashboard">React Dashboard</a>
+  </div>
+</header>
+
+<!-- ============================================================ -->
+<!-- LANDING / HOME                                                -->
+<!-- ============================================================ -->
+<section class="screen active" id="screen-home">
+  <div class="hero">
+    <h1>Three projects.<em>Under the hood.</em></h1>
+    <p class="lead">Interactive walkthroughs of three production-shaped projects I built. Each section has an annotated <b>architecture diagram</b>, a tour of the <b>key files</b>, and a <b>real flow</b> traced step-by-step through the code. Pick a project to dive in.</p>
+  </div>
+
+  <div class="project-grid">
+    <a class="proj-card" href="#aws-task-manager-api" onclick="navigate('aws-task-manager-api'); return false;">
+      <div class="tag">◦ project 01 · backend</div>
+      <h2>AWS Task Manager API</h2>
+      <p>FastAPI + SQLAlchemy task manager designed for AWS. SQLite for local development, PostgreSQL on RDS in production, optional S3 attachments, Dockerized, deployable to EC2 with least-privilege IAM.</p>
+      <div class="chips">
+        <span class="chip">Python</span>
+        <span class="chip">FastAPI</span>
+        <span class="chip">SQLAlchemy</span>
+        <span class="chip">AWS</span>
+      </div>
+      <span class="open-cue">Open walkthrough →</span>
+    </a>
+
+    <a class="proj-card" href="#distributed-job-queue-system" onclick="navigate('distributed-job-queue-system'); return false;">
+      <div class="tag">◦ project 02 · distributed systems</div>
+      <h2>Distributed Job Queue System</h2>
+      <p>Producer/worker system with SQS for the queue and DynamoDB for state. Idempotency keys (via a GSI), bounded retries, dead-letter handling, and an in-memory fallback so the whole stack runs locally without AWS.</p>
+      <div class="chips">
+        <span class="chip">Python</span>
+        <span class="chip">SQS</span>
+        <span class="chip">DynamoDB</span>
+        <span class="chip">boto3</span>
+      </div>
+      <span class="open-cue">Open walkthrough →</span>
+    </a>
+
+    <a class="proj-card" href="#react-task-manager-dashboard" onclick="navigate('react-task-manager-dashboard'); return false;">
+      <div class="tag">◦ project 03 · frontend</div>
+      <h2>React Task Manager Dashboard</h2>
+      <p>React + Vite frontend that consumes the AWS Task Manager API end to end. Six small components, an axios service layer that normalizes errors, env-driven backend URL, and 27 Vitest + React Testing Library tests.</p>
+      <div class="chips">
+        <span class="chip">React</span>
+        <span class="chip">Vite</span>
+        <span class="chip">Vitest</span>
+        <span class="chip">axios</span>
+      </div>
+      <span class="open-cue">Open walkthrough →</span>
+    </a>
+  </div>
+
+  <div class="note">
+    <b>Why these three?</b> They form a self-contained engineering story — backend API, the distributed pattern it can scale into, and the frontend that consumes it. The fourth recent project, <a href="https://gabrielchangamire-arch.github.io/community-compass" target="_blank" rel="noreferrer" style="color: var(--accent); text-decoration: none;">Community Compass</a>, is a finished public-facing app that explains itself.
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- PROJECT 1: aws-task-manager-api                               -->
+<!-- ============================================================ -->
+<section class="screen" id="screen-aws-task-manager-api">
+  <div class="proj-hero">
+    <div>
+      <div class="label">Project 01 · Backend</div>
+      <h1>AWS Task Manager API</h1>
+      <p class="tagline">A FastAPI + SQLAlchemy task manager designed to deploy cleanly to AWS. The same code path runs on SQLite locally and PostgreSQL on RDS in production; S3 attachments are opt-in via a feature flag. Comes with a Dockerfile, GitHub Actions CI, and least-privilege IAM policies committed in the repo.</p>
+      <div class="chips">
+        <span class="chip hot">FastAPI</span>
+        <span class="chip">SQLAlchemy 2.0</span>
+        <span class="chip">PostgreSQL / SQLite</span>
+        <span class="chip">boto3 (S3)</span>
+        <span class="chip">Docker</span>
+        <span class="chip">EC2 + RDS + S3</span>
+        <span class="chip">IAM</span>
+      </div>
+    </div>
+    <div class="actions">
+      <a class="external" href="https://github.com/gabrielchangamire-arch/aws-task-manager-api" target="_blank" rel="noreferrer">GitHub ↗</a>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">01 · Architecture</div>
+    <p class="section-sub">Stateless FastAPI service on EC2, talking to a Postgres database on RDS, and (optionally) S3 for file attachments. The same code runs locally against SQLite with S3 disabled.</p>
+    <div class="arch-wrap">
+      <svg class="arch-svg" viewBox="0 0 760 380" data-project="aws-task-manager-api">
+        <!-- Client -->
+        <rect class="arch-box ext" id="aws-ext-client" x="20" y="160" width="120" height="60" rx="8"/>
+        <text class="arch-label" x="80" y="190" text-anchor="middle">Client</text>
+        <text class="arch-sub" x="80" y="205" text-anchor="middle">browser / curl</text>
+
+        <!-- ALB (optional) -->
+        <rect class="arch-box ext" id="aws-ext-alb" x="190" y="160" width="120" height="60" rx="8"/>
+        <text class="arch-label" x="250" y="187" text-anchor="middle">ALB</text>
+        <text class="arch-sub" x="250" y="201" text-anchor="middle">HTTPS termination</text>
+        <text class="arch-sub" x="250" y="212" text-anchor="middle">(optional)</text>
+
+        <!-- EC2 + FastAPI -->
+        <rect class="arch-box" id="aws-app-api" x="360" y="140" width="180" height="100" rx="10"/>
+        <text class="arch-label" x="450" y="170" text-anchor="middle">FastAPI</text>
+        <text class="arch-sub" x="450" y="185" text-anchor="middle">app/main.py</text>
+        <text class="arch-sub" x="450" y="200" text-anchor="middle">routers/{health, tasks}</text>
+        <text class="arch-sub" x="450" y="215" text-anchor="middle">on EC2 (t3.micro)</text>
+        <text class="arch-sub" x="450" y="230" text-anchor="middle">uvicorn behind Docker</text>
+
+        <!-- RDS Postgres -->
+        <rect class="arch-box ext" id="aws-ext-db" x="600" y="40" width="140" height="80" rx="10"/>
+        <text class="arch-label" x="670" y="68" text-anchor="middle">RDS</text>
+        <text class="arch-sub" x="670" y="83" text-anchor="middle">PostgreSQL 16</text>
+        <text class="arch-sub" x="670" y="96" text-anchor="middle">tasks table</text>
+        <text class="arch-sub" x="670" y="109" text-anchor="middle">(SQLite locally)</text>
+
+        <!-- S3 -->
+        <rect class="arch-box ext" id="aws-ext-s3" x="600" y="260" width="140" height="80" rx="10"/>
+        <text class="arch-label" x="670" y="288" text-anchor="middle">S3</text>
+        <text class="arch-sub" x="670" y="303" text-anchor="middle">attachments bucket</text>
+        <text class="arch-sub" x="670" y="316" text-anchor="middle">prefix: tasks/&lt;id&gt;/</text>
+        <text class="arch-sub" x="670" y="329" text-anchor="middle">(optional, opt-in)</text>
+
+        <!-- IAM badge -->
+        <rect class="arch-box" id="aws-app-iam" x="380" y="280" width="140" height="60" rx="8"/>
+        <text class="arch-label" x="450" y="307" text-anchor="middle">IAM instance role</text>
+        <text class="arch-sub" x="450" y="322" text-anchor="middle">least-priv S3 access</text>
+
+        <!-- Arrows: client -> alb -> api -->
+        <path class="arch-line" id="aws-line-client-alb" d="M140 190 L190 190"/>
+        <polygon class="arch-arrow" id="aws-arrow-client-alb" points="190,190 184,186 184,194"/>
+        <path class="arch-line" id="aws-line-alb-api" d="M310 190 L360 190"/>
+        <polygon class="arch-arrow" id="aws-arrow-alb-api" points="360,190 354,186 354,194"/>
+
+        <!-- API -> RDS -->
+        <path class="arch-line" id="aws-line-api-db" d="M540 165 Q580 130 600 100"/>
+        <polygon class="arch-arrow" id="aws-arrow-api-db" points="600,100 595,108 604,107"/>
+        <text class="arch-sub" x="554" y="120">psycopg</text>
+
+        <!-- API -> S3 -->
+        <path class="arch-line dash" id="aws-line-api-s3" d="M540 220 Q580 250 600 290"/>
+        <polygon class="arch-arrow" id="aws-arrow-api-s3" points="600,290 593,284 596,293"/>
+        <text class="arch-sub" x="554" y="263">boto3</text>
+
+        <!-- IAM provides creds -->
+        <path class="arch-line dash" id="aws-line-iam-api" d="M450 280 L450 245"/>
+        <polygon class="arch-arrow" id="aws-arrow-iam-api" points="450,240 446,247 454,247"/>
+        <text class="arch-sub" x="455" y="265">creds</text>
+      </svg>
+      <div class="arch-legend">
+        <span class="item"><span class="swatch app"></span> in-repo code</span>
+        <span class="item"><span class="swatch ext"></span> external service</span>
+        <span class="item"><span class="swatch flow"></span> highlighted in the flow below</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">02 · Key files</div>
+    <p class="section-sub">The whole repo is intentionally small. Five files do the work; the rest is config, tests, and deployment docs.</p>
+    <div class="files-grid">
+      <div class="file-card">
+        <div class="path">app/main.py</div>
+        <div class="role">FastAPI app construction, lifespan that calls <code>init_db()</code> on boot, exception handlers, router mounting. The narrowest possible entrypoint.</div>
+      </div>
+      <div class="file-card">
+        <div class="path">app/database.py</div>
+        <div class="role">SQLAlchemy engine + sessionmaker. Reads <code>DATABASE_URL</code> from env so the same code runs against SQLite, local Postgres via Docker, or RDS Postgres.</div>
+      </div>
+      <div class="file-card">
+        <div class="path">app/models.py</div>
+        <div class="role">The <code>Task</code> ORM model with a <code>TaskStatus</code> enum, UUID primary keys, and timestamps with automatic update tracking via SQLAlchemy 2.0 typed columns.</div>
+      </div>
+      <div class="file-card">
+        <div class="path">app/routers/tasks.py</div>
+        <div class="role">The REST endpoints — POST / GET / PUT / DELETE on <code>/tasks</code> plus <code>/tasks/&#123;id&#125;/attachment</code> for S3 uploads. Returns 404 / 422 / 503 with friendly bodies.</div>
+      </div>
+      <div class="file-card">
+        <div class="path">app/storage/s3.py</div>
+        <div class="role">Optional S3 client wrapper. Feature-flagged via <code>S3_ENABLED</code>. Builds keys under a <code>tasks/&lt;id&gt;/</code> prefix so the IAM policy can scope tightly.</div>
+      </div>
+      <div class="file-card">
+        <div class="path">iam/s3-task-attachments-policy.json</div>
+        <div class="role">Real least-privilege IAM policy committed alongside the code. Grants <code>GetObject / PutObject / DeleteObject</code> on <code>bucket/tasks/*</code> only — no wildcards.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">03 · Flow · create a task</div>
+    <p class="section-sub">Walks one POST request through the code — header parses, validation hits, model gets persisted, response returns. Use Step / Reset to advance the highlight on the diagram above.</p>
+    <div class="flow-wrap">
+      <div class="flow-controls">
+        <button class="flow-btn primary" onclick="flowPrev('aws-task-manager-api')">◀ Prev</button>
+        <button class="flow-btn primary" onclick="flowNext('aws-task-manager-api')">Step ▶</button>
+        <button class="flow-btn" onclick="flowReset('aws-task-manager-api')">Reset</button>
+        <span class="flow-pos">step <span class="now" id="flow-pos-aws-task-manager-api">0</span> / 5</span>
+      </div>
+      <div id="flow-steps-aws-task-manager-api">
+        <div class="flow-step" data-active="aws-ext-client aws-line-client-alb aws-arrow-client-alb">
+          <div class="n">1</div>
+          <div class="body">
+            <h4>Client sends the request</h4>
+            <p><code>curl -X POST https://api.example/tasks</code> with a JSON body of <code>{title, description, status}</code>. Travels over HTTPS to the load balancer.</p>
+          </div>
+        </div>
+        <div class="flow-step" data-active="aws-ext-alb aws-line-alb-api aws-arrow-alb-api">
+          <div class="n">2</div>
+          <div class="body">
+            <h4>ALB forwards to the EC2 app</h4>
+            <p>The ALB terminates TLS and routes to the FastAPI container running on the EC2 instance, port 8000. Healthchecks at <code>/health</code> verify the instance is up.</p>
+          </div>
+        </div>
+        <div class="flow-step" data-active="aws-app-api">
+          <div class="n">3</div>
+          <div class="body">
+            <h4>FastAPI parses + validates</h4>
+            <p>The route handler in <code>routers/tasks.py</code> receives the body. Pydantic's <code>TaskCreate</code> schema validates required fields and types, returning <code>422</code> with field-level errors if anything is off.</p>
+          </div>
+        </div>
+        <div class="flow-step" data-active="aws-app-api aws-line-api-db aws-arrow-api-db aws-ext-db">
+          <div class="n">4</div>
+          <div class="body">
+            <h4>SQLAlchemy persists the row</h4>
+            <p><code>Depends(get_db)</code> hands the handler a request-scoped session. <code>crud.create_task</code> instantiates a <code>Task</code> with a new UUID, adds, commits, and refreshes. psycopg writes to RDS.</p>
+          </div>
+        </div>
+        <div class="flow-step" data-active="aws-app-api aws-ext-client aws-line-alb-api aws-line-client-alb">
+          <div class="n">5</div>
+          <div class="body">
+            <h4>201 Created flows back</h4>
+            <p>The handler returns the model serialized through <code>TaskRead</code>. FastAPI sets <code>201</code>, the session closes in the dependency's <code>finally</code>, and the client receives JSON with the new task and its UUID.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- placeholder anchors for the other two screens — content is appended next -->
+<!-- ============================================================ -->
+<!-- PROJECT 2: distributed-job-queue-system                       -->
+<!-- ============================================================ -->
+<section class="screen" id="screen-distributed-job-queue-system">
+  <div class="proj-hero">
+    <div>
+      <div class="label">Project 02 · Distributed systems</div>
+      <h1>Distributed Job Queue System</h1>
+      <p class="tagline">A producer/worker pattern with SQS as the queue and DynamoDB as the state store. The API submits jobs in milliseconds and returns; the worker handles them out of the request path. Idempotency through a GSI, bounded retries, dead-letter on terminal failure, and an in-memory fallback so the whole system runs locally with zero AWS credentials.</p>
+      <div class="chips">
+        <span class="chip hot">SQS</span>
+        <span class="chip hot">DynamoDB</span>
+        <span class="chip">FastAPI</span>
+        <span class="chip">boto3</span>
+        <span class="chip">CloudWatch</span>
+        <span class="chip">moto (tests)</span>
+        <span class="chip">Idempotency · Retries · DLQ</span>
+      </div>
+    </div>
+    <div class="actions">
+      <a class="external" href="https://github.com/gabrielchangamire-arch/distributed-job-queue-system" target="_blank" rel="noreferrer">GitHub ↗</a>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">01 · Architecture</div>
+    <p class="section-sub">The API and worker are two independent processes. They communicate only through SQS messages and shared state in DynamoDB — no shared memory, no direct calls. That decoupling is the whole point.</p>
+    <div class="arch-wrap">
+      <svg class="arch-svg" viewBox="0 0 800 420" data-project="distributed-job-queue-system">
+        <!-- Client -->
+        <rect class="arch-box ext" id="djq-ext-client" x="20" y="180" width="110" height="60" rx="8"/>
+        <text class="arch-label" x="75" y="208" text-anchor="middle">Client</text>
+        <text class="arch-sub" x="75" y="223" text-anchor="middle">POST /jobs</text>
+
+        <!-- API Producer -->
+        <rect class="arch-box" id="djq-app-api" x="170" y="155" width="170" height="110" rx="10"/>
+        <text class="arch-label" x="255" y="184" text-anchor="middle">FastAPI Producer</text>
+        <text class="arch-sub" x="255" y="200" text-anchor="middle">app/main.py</text>
+        <text class="arch-sub" x="255" y="214" text-anchor="middle">routers/jobs.py</text>
+        <text class="arch-sub" x="255" y="228" text-anchor="middle">submit · status · list</text>
+        <text class="arch-sub" x="255" y="242" text-anchor="middle">idempotency check</text>
+        <text class="arch-sub" x="255" y="256" text-anchor="middle">via GSI on DynamoDB</text>
+
+        <!-- DynamoDB -->
+        <rect class="arch-box ext" id="djq-ext-ddb" x="600" y="40" width="170" height="100" rx="10"/>
+        <text class="arch-label" x="685" y="68" text-anchor="middle">DynamoDB</text>
+        <text class="arch-sub" x="685" y="83" text-anchor="middle">jobs table</text>
+        <text class="arch-sub" x="685" y="97" text-anchor="middle">PK: job_id (UUID)</text>
+        <text class="arch-sub" x="685" y="111" text-anchor="middle">GSI: idempotency_key</text>
+        <text class="arch-sub" x="685" y="125" text-anchor="middle">on-demand billing</text>
+
+        <!-- SQS -->
+        <rect class="arch-box ext" id="djq-ext-sqs" x="380" y="170" width="170" height="80" rx="10"/>
+        <text class="arch-label" x="465" y="198" text-anchor="middle">SQS</text>
+        <text class="arch-sub" x="465" y="213" text-anchor="middle">jobs-queue (standard)</text>
+        <text class="arch-sub" x="465" y="227" text-anchor="middle">visibility: 60s</text>
+        <text class="arch-sub" x="465" y="241" text-anchor="middle">message body: {job_id}</text>
+
+        <!-- Worker -->
+        <rect class="arch-box" id="djq-app-worker" x="600" y="170" width="170" height="100" rx="10"/>
+        <text class="arch-label" x="685" y="198" text-anchor="middle">Worker process</text>
+        <text class="arch-sub" x="685" y="213" text-anchor="middle">worker/runner.py</text>
+        <text class="arch-sub" x="685" y="227" text-anchor="middle">long-poll receive</text>
+        <text class="arch-sub" x="685" y="241" text-anchor="middle">process · update state</text>
+        <text class="arch-sub" x="685" y="255" text-anchor="middle">delete on success</text>
+
+        <!-- DLQ -->
+        <rect class="arch-box ext" id="djq-ext-dlq" x="380" y="290" width="170" height="70" rx="10"/>
+        <text class="arch-label" x="465" y="316" text-anchor="middle">SQS DLQ</text>
+        <text class="arch-sub" x="465" y="331" text-anchor="middle">jobs-dlq</text>
+        <text class="arch-sub" x="465" y="345" text-anchor="middle">after maxReceiveCount</text>
+
+        <!-- CloudWatch -->
+        <rect class="arch-box ext" id="djq-ext-cw" x="170" y="320" width="170" height="60" rx="8"/>
+        <text class="arch-label" x="255" y="345" text-anchor="middle">CloudWatch</text>
+        <text class="arch-sub" x="255" y="360" text-anchor="middle">logs + custom metrics</text>
+
+        <!-- Lines -->
+        <!-- Client -> API -->
+        <path class="arch-line" id="djq-line-client-api" d="M130 210 L170 210"/>
+        <polygon class="arch-arrow" id="djq-arrow-client-api" points="170,210 164,206 164,214"/>
+
+        <!-- API -> DynamoDB (idempotency check + put) -->
+        <path class="arch-line" id="djq-line-api-ddb" d="M340 175 Q500 110 600 90"/>
+        <polygon class="arch-arrow" id="djq-arrow-api-ddb" points="600,90 593,87 596,96"/>
+        <text class="arch-sub" x="430" y="125">PutItem · Query GSI</text>
+
+        <!-- API -> SQS -->
+        <path class="arch-line" id="djq-line-api-sqs" d="M340 210 L380 210"/>
+        <polygon class="arch-arrow" id="djq-arrow-api-sqs" points="380,210 374,206 374,214"/>
+        <text class="arch-sub" x="345" y="200">SendMessage</text>
+
+        <!-- SQS -> Worker (ReceiveMessage) -->
+        <path class="arch-line" id="djq-line-sqs-worker" d="M550 210 L600 210"/>
+        <polygon class="arch-arrow" id="djq-arrow-sqs-worker" points="600,210 594,206 594,214"/>
+        <text class="arch-sub" x="555" y="200">Receive</text>
+
+        <!-- Worker -> DynamoDB (UpdateItem) -->
+        <path class="arch-line" id="djq-line-worker-ddb" d="M685 170 L685 140"/>
+        <polygon class="arch-arrow" id="djq-arrow-worker-ddb" points="685,135 681,143 689,143"/>
+        <text class="arch-sub" x="690" y="158">UpdateItem</text>
+
+        <!-- Worker -> SQS (DeleteMessage feedback line) -->
+        <path class="arch-line dash" id="djq-line-worker-sqs" d="M600 245 L550 245"/>
+        <polygon class="arch-arrow" id="djq-arrow-worker-sqs" points="550,245 556,241 556,249"/>
+        <text class="arch-sub" x="555" y="259">DeleteMessage</text>
+
+        <!-- SQS -> DLQ (overflow) -->
+        <path class="arch-line dash" id="djq-line-sqs-dlq" d="M465 250 L465 290"/>
+        <polygon class="arch-arrow" id="djq-arrow-sqs-dlq" points="465,290 461,283 469,283"/>
+
+        <!-- API -> CloudWatch (logs) -->
+        <path class="arch-line dash" id="djq-line-api-cw" d="M255 265 L255 320"/>
+        <polygon class="arch-arrow" id="djq-arrow-api-cw" points="255,320 251,313 259,313"/>
+
+        <!-- Worker -> CloudWatch (logs/metrics) -->
+        <path class="arch-line dash" id="djq-line-worker-cw" d="M685 270 Q480 340 340 348"/>
+        <polygon class="arch-arrow" id="djq-arrow-worker-cw" points="340,348 348,344 348,352"/>
+      </svg>
+      <div class="arch-legend">
+        <span class="item"><span class="swatch app"></span> in-repo process</span>
+        <span class="item"><span class="swatch ext"></span> AWS service</span>
+        <span class="item"><span class="swatch flow"></span> highlighted in the flow below</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">02 · Key files</div>
+    <p class="section-sub">Every external concern (queue, store) is an interface with two implementations. The worker uses only the abstract types, so the same code runs against in-memory fakes in tests and real SQS / DynamoDB in production.</p>
+    <div class="files-grid">
+      <div class="file-card">
+        <div class="path">app/routers/jobs.py</div>
+        <div class="role">The producer endpoints — <code>POST /jobs</code>, <code>GET /jobs</code>, <code>GET /jobs/&#123;id&#125;</code>. Idempotency lookup happens here via the DynamoDB GSI before any SQS write.</div>
+      </div>
+      <div class="file-card">
+        <div class="path">app/queue/sqs_client.py</div>
+        <div class="role">The <code>QueueClient</code> SQS implementation. Wraps <code>send_message</code>, <code>receive_message</code>, and <code>delete_message</code>. Paired with an in-memory implementation for tests.</div>
+      </div>
+      <div class="file-card">
+        <div class="path">app/store/dynamodb_store.py</div>
+        <div class="role">The <code>JobStore</code> DynamoDB implementation. Owns the partition-key choice (UUID job_id), GSI query for idempotency keys, and update expressions for state transitions.</div>
+      </div>
+      <div class="file-card">
+        <div class="path">worker/runner.py</div>
+        <div class="role">The poll loop: long-poll SQS → mark <code>in_progress</code> → run the handler → mark <code>completed</code> or <code>failed</code> → delete the message. Retry logic and DLQ handling live here.</div>
+      </div>
+      <div class="file-card">
+        <div class="path">app/job_processing.py</div>
+        <div class="role">The pure handler functions (<code>echo</code>, <code>sleep</code>, <code>fail</code>, <code>factorial</code>). No I/O. Trivially unit-testable, easy to extend with new job types.</div>
+      </div>
+      <div class="file-card">
+        <div class="path">tests/test_sqs_dynamodb.py</div>
+        <div class="role">End-to-end test against moto-mocked SQS + DynamoDB. Exercises the real <code>boto3</code> code paths — same calls that run in production, just hitting moto's in-memory implementations.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">03 · Flow · submit and process a job</div>
+    <p class="section-sub">One full job lifecycle — from the client's POST through the queue, into the worker, back to the client polling <code>GET /jobs/&#123;id&#125;</code> and seeing <code>completed</code>.</p>
+    <div class="flow-wrap">
+      <div class="flow-controls">
+        <button class="flow-btn primary" onclick="flowPrev('distributed-job-queue-system')">◀ Prev</button>
+        <button class="flow-btn primary" onclick="flowNext('distributed-job-queue-system')">Step ▶</button>
+        <button class="flow-btn" onclick="flowReset('distributed-job-queue-system')">Reset</button>
+        <span class="flow-pos">step <span class="now" id="flow-pos-distributed-job-queue-system">0</span> / 6</span>
+      </div>
+      <div id="flow-steps-distributed-job-queue-system">
+        <div class="flow-step" data-active="djq-ext-client djq-line-client-api djq-arrow-client-api djq-app-api">
+          <div class="n">1</div>
+          <div class="body">
+            <h4>Client POSTs to /jobs</h4>
+            <p>Body: <code>&#123;"type": "factorial", "payload": &#123;"n": 10&#125;, "idempotency_key": "abc"&#125;</code>. FastAPI validates with Pydantic.</p>
+          </div>
+        </div>
+        <div class="flow-step" data-active="djq-app-api djq-line-api-ddb djq-arrow-api-ddb djq-ext-ddb">
+          <div class="n">2</div>
+          <div class="body">
+            <h4>Idempotency check (GSI query)</h4>
+            <p>Producer queries the <code>idempotency_key-index</code> GSI. If a row exists with that key, the existing job_id is returned and the request becomes a no-op replay. Otherwise it continues.</p>
+          </div>
+        </div>
+        <div class="flow-step" data-active="djq-app-api djq-line-api-ddb djq-arrow-api-ddb djq-ext-ddb djq-line-api-sqs djq-arrow-api-sqs djq-ext-sqs">
+          <div class="n">3</div>
+          <div class="body">
+            <h4>Persist + enqueue</h4>
+            <p>Producer <code>PutItem</code>s a new row to DynamoDB with status <code>pending</code> and the payload, then <code>SendMessage</code>s <code>&#123;job_id&#125;</code> to SQS. Returns <code>202 Accepted</code> with the new job_id.</p>
+          </div>
+        </div>
+        <div class="flow-step" data-active="djq-ext-sqs djq-line-sqs-worker djq-arrow-sqs-worker djq-app-worker">
+          <div class="n">4</div>
+          <div class="body">
+            <h4>Worker pulls the message</h4>
+            <p>The long-poll <code>ReceiveMessage</code> returns the job_id. SQS sets a 60-second visibility timeout — if the worker crashes mid-process, the message reappears.</p>
+          </div>
+        </div>
+        <div class="flow-step" data-active="djq-app-worker djq-line-worker-ddb djq-arrow-worker-ddb djq-ext-ddb">
+          <div class="n">5</div>
+          <div class="body">
+            <h4>Process + update state</h4>
+            <p>Worker <code>GetItem</code>s the row, marks <code>in_progress</code>, runs the handler in <code>job_processing.py</code>, then <code>UpdateItem</code>s the row with <code>completed</code> + <code>result</code> JSON.</p>
+          </div>
+        </div>
+        <div class="flow-step" data-active="djq-app-worker djq-line-worker-sqs djq-arrow-worker-sqs djq-ext-sqs">
+          <div class="n">6</div>
+          <div class="body">
+            <h4>Delete the message</h4>
+            <p>On success the worker <code>DeleteMessage</code>s by receipt handle. Client now polls <code>GET /jobs/&#123;id&#125;</code> and gets <code>status: completed</code>, <code>result: &#123;...&#125;</code>. On failure, retry count bumps; after the cap, the message lands in the DLQ.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ============================================================ -->
+<!-- PROJECT 3: react-task-manager-dashboard                       -->
+<!-- ============================================================ -->
+<section class="screen" id="screen-react-task-manager-dashboard">
+  <div class="proj-hero">
+    <div>
+      <div class="label">Project 03 · Frontend</div>
+      <h1>React Task Manager Dashboard</h1>
+      <p class="tagline">A React + Vite dashboard that consumes the AWS Task Manager API end to end — the front half of a full-stack story. Six small components, an axios service layer that normalizes every HTTP error to a friendly message, env-driven backend URL, accessibility-first selectors, and 27 Vitest + React Testing Library tests across three boundaries (App, components, service).</p>
+      <div class="chips">
+        <span class="chip hot">React 18</span>
+        <span class="chip hot">Vite 6</span>
+        <span class="chip">JavaScript</span>
+        <span class="chip">axios</span>
+        <span class="chip">Vitest</span>
+        <span class="chip">React Testing Library</span>
+        <span class="chip">Responsive CSS · a11y</span>
+      </div>
+    </div>
+    <div class="actions">
+      <a class="external" href="https://github.com/gabrielchangamire-arch/react-task-manager-dashboard" target="_blank" rel="noreferrer">GitHub ↗</a>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">01 · Architecture</div>
+    <p class="section-sub">Three layers: <b>App</b> owns state, <b>components</b> are presentational + lightly stateful, <b>services/api.js</b> is the only place that knows about HTTP. The backend is the same FastAPI service from project 01.</p>
+    <div class="arch-wrap">
+      <svg class="arch-svg" viewBox="0 0 800 420" data-project="react-task-manager-dashboard">
+        <!-- User / Browser -->
+        <rect class="arch-box ext" id="rtd-ext-user" x="20" y="180" width="110" height="60" rx="8"/>
+        <text class="arch-label" x="75" y="208" text-anchor="middle">Browser</text>
+        <text class="arch-sub" x="75" y="223" text-anchor="middle">user actions</text>
+
+        <!-- App.jsx -->
+        <rect class="arch-box" id="rtd-app-app" x="170" y="100" width="200" height="80" rx="10"/>
+        <text class="arch-label" x="270" y="128" text-anchor="middle">src/App.jsx</text>
+        <text class="arch-sub" x="270" y="143" text-anchor="middle">state: tasks, filter,</text>
+        <text class="arch-sub" x="270" y="156" text-anchor="middle">loading, error</text>
+        <text class="arch-sub" x="270" y="169" text-anchor="middle">computed: visibleTasks, counts</text>
+
+        <!-- Components -->
+        <rect class="arch-box" id="rtd-app-components" x="170" y="210" width="200" height="120" rx="10"/>
+        <text class="arch-label" x="270" y="237" text-anchor="middle">Components</text>
+        <text class="arch-sub" x="270" y="252" text-anchor="middle">TaskForm · TaskList</text>
+        <text class="arch-sub" x="270" y="265" text-anchor="middle">TaskItem · FilterBar</text>
+        <text class="arch-sub" x="270" y="278" text-anchor="middle">ErrorBanner · LoadingSpinner</text>
+        <text class="arch-sub" x="270" y="294" text-anchor="middle">presentational +</text>
+        <text class="arch-sub" x="270" y="307" text-anchor="middle">edit-mode local state</text>
+
+        <!-- Service -->
+        <rect class="arch-box" id="rtd-app-service" x="410" y="160" width="180" height="100" rx="10"/>
+        <text class="arch-label" x="500" y="188" text-anchor="middle">services/api.js</text>
+        <text class="arch-sub" x="500" y="204" text-anchor="middle">axios instance</text>
+        <text class="arch-sub" x="500" y="218" text-anchor="middle">tasksApi: list/create/</text>
+        <text class="arch-sub" x="500" y="232" text-anchor="middle">update/remove/health</text>
+        <text class="arch-sub" x="500" y="246" text-anchor="middle">error normalization</text>
+
+        <!-- Backend -->
+        <rect class="arch-box ext" id="rtd-ext-backend" x="640" y="160" width="140" height="100" rx="10"/>
+        <text class="arch-label" x="710" y="188" text-anchor="middle">FastAPI</text>
+        <text class="arch-sub" x="710" y="204" text-anchor="middle">aws-task-manager-api</text>
+        <text class="arch-sub" x="710" y="218" text-anchor="middle">localhost:8000</text>
+        <text class="arch-sub" x="710" y="232" text-anchor="middle">or deployed URL</text>
+        <text class="arch-sub" x="710" y="246" text-anchor="middle">CORS allowed</text>
+
+        <!-- Vitest layers -->
+        <rect class="arch-box" id="rtd-app-tests" x="170" y="350" width="420" height="50" rx="8"/>
+        <text class="arch-label" x="380" y="375" text-anchor="middle">Vitest + React Testing Library</text>
+        <text class="arch-sub" x="380" y="390" text-anchor="middle">App.test (mocks service) · component tests · api.test (mocks axios)</text>
+
+        <!-- Lines -->
+        <path class="arch-line" id="rtd-line-user-app" d="M130 200 Q150 170 170 145"/>
+        <polygon class="arch-arrow" id="rtd-arrow-user-app" points="170,145 164,150 173,153"/>
+        <text class="arch-sub" x="120" y="175">events</text>
+
+        <path class="arch-line" id="rtd-line-app-components" d="M270 180 L270 210"/>
+        <polygon class="arch-arrow" id="rtd-arrow-app-components" points="270,210 266,203 274,203"/>
+        <text class="arch-sub" x="278" y="200">props · handlers</text>
+
+        <path class="arch-line" id="rtd-line-app-service" d="M370 140 Q400 150 410 175"/>
+        <polygon class="arch-arrow" id="rtd-arrow-app-service" points="410,175 405,167 412,170"/>
+        <text class="arch-sub" x="372" y="155">tasksApi.list()</text>
+
+        <path class="arch-line" id="rtd-line-service-backend" d="M590 210 L640 210"/>
+        <polygon class="arch-arrow" id="rtd-arrow-service-backend" points="640,210 634,206 634,214"/>
+        <text class="arch-sub" x="591" y="200">HTTP</text>
+
+        <path class="arch-line dash" id="rtd-line-components-app" d="M370 290 Q400 240 410 230"/>
+        <polygon class="arch-arrow" id="rtd-arrow-components-app" points="410,230 403,235 412,238"/>
+        <text class="arch-sub" x="378" y="252">callbacks</text>
+      </svg>
+      <div class="arch-legend">
+        <span class="item"><span class="swatch app"></span> in-repo module</span>
+        <span class="item"><span class="swatch ext"></span> browser / backend</span>
+        <span class="item"><span class="swatch flow"></span> highlighted in the flow below</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">02 · Key files</div>
+    <p class="section-sub">App is the only stateful piece. Components stay small and dumb. The service layer is the firewall between the rest of the app and HTTP.</p>
+    <div class="files-grid">
+      <div class="file-card">
+        <div class="path">src/App.jsx</div>
+        <div class="role">Owns <code>tasks</code>, <code>filter</code>, <code>loading</code>, <code>error</code>. Computes <code>visibleTasks</code> and <code>counts</code> with <code>useMemo</code>. Fetches once on mount via <code>useEffect</code>. Handlers update state in place after each service call.</div>
+      </div>
+      <div class="file-card">
+        <div class="path">src/services/api.js</div>
+        <div class="role">Axios instance bound to <code>VITE_API_BASE_URL</code>. The <code>tasksApi</code> wrapper throws normalized <code>Error</code> instances — network failures become "could not reach the API," backend 4xx surfaces the detail string.</div>
+      </div>
+      <div class="file-card">
+        <div class="path">src/components/TaskForm.jsx</div>
+        <div class="role">Controlled inputs for title + description, client-side trim + validation, surfaces backend errors via local state. The only "smart" form in the app.</div>
+      </div>
+      <div class="file-card">
+        <div class="path">src/components/TaskItem.jsx</div>
+        <div class="role">One row: checkbox toggle, inline edit mode (with its own draft state), delete. Tracks <code>busy</code> locally so buttons disable during the API call.</div>
+      </div>
+      <div class="file-card">
+        <div class="path">src/components/FilterBar.jsx</div>
+        <div class="role">Three buttons with <code>aria-pressed</code> + count badges. Pure component, gets value and onChange from App. Tests assert on accessibility attributes, not CSS.</div>
+      </div>
+      <div class="file-card">
+        <div class="path">tests/App.test.jsx</div>
+        <div class="role">15 integration tests against the real App with <code>vi.mock('../src/services/api.js')</code>. Covers initial render, filtering, create, toggle, delete, error banner, retry — all via accessibility selectors.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">03 · Flow · toggle a task to done</div>
+    <p class="section-sub">A short user interaction traced from a checkbox click all the way to the backend PUT and back. Shows where state lives at each step.</p>
+    <div class="flow-wrap">
+      <div class="flow-controls">
+        <button class="flow-btn primary" onclick="flowPrev('react-task-manager-dashboard')">◀ Prev</button>
+        <button class="flow-btn primary" onclick="flowNext('react-task-manager-dashboard')">Step ▶</button>
+        <button class="flow-btn" onclick="flowReset('react-task-manager-dashboard')">Reset</button>
+        <span class="flow-pos">step <span class="now" id="flow-pos-react-task-manager-dashboard">0</span> / 5</span>
+      </div>
+      <div id="flow-steps-react-task-manager-dashboard">
+        <div class="flow-step" data-active="rtd-ext-user rtd-line-user-app rtd-arrow-user-app rtd-app-components">
+          <div class="n">1</div>
+          <div class="body">
+            <h4>User clicks the checkbox</h4>
+            <p>The checkbox lives inside <code>TaskItem.jsx</code>. The onChange fires <code>handleToggle</code>, which calls the <code>onToggle</code> prop handed down from App. Local <code>busy</code> state flips to true; the row visually disables.</p>
+          </div>
+        </div>
+        <div class="flow-step" data-active="rtd-app-components rtd-line-components-app rtd-arrow-components-app rtd-app-app">
+          <div class="n">2</div>
+          <div class="body">
+            <h4>App.handleToggle decides the next status</h4>
+            <p>App reads the current task's <code>status</code>. If it's <code>done</code> it'll flip to <code>pending</code>, otherwise <code>done</code>. Then it asks the service to persist that change.</p>
+          </div>
+        </div>
+        <div class="flow-step" data-active="rtd-app-app rtd-line-app-service rtd-arrow-app-service rtd-app-service">
+          <div class="n">3</div>
+          <div class="body">
+            <h4>tasksApi.update fires</h4>
+            <p>The service layer issues <code>http.put('/tasks/{id}', { status })</code>. Any failure here is caught in App and surfaced via the <code>ErrorBanner</code> — the row stays at its old status, the user can retry.</p>
+          </div>
+        </div>
+        <div class="flow-step" data-active="rtd-app-service rtd-line-service-backend rtd-arrow-service-backend rtd-ext-backend">
+          <div class="n">4</div>
+          <div class="body">
+            <h4>Backend updates the row</h4>
+            <p>FastAPI applies the partial update through SQLAlchemy, commits, returns the updated <code>Task</code> JSON. axios resolves the promise back in the browser.</p>
+          </div>
+        </div>
+        <div class="flow-step" data-active="rtd-app-app rtd-app-components">
+          <div class="n">5</div>
+          <div class="body">
+            <h4>State replaces the row</h4>
+            <p>App's handler maps over <code>tasks</code> and swaps in the updated row. React re-renders <code>TaskItem</code> with the new status; the checkbox is now checked, the title gets the strike-through class. Counts on <code>FilterBar</code> update automatically via <code>useMemo</code>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div>Companion to <a href="https://gabrielchangamire-arch.github.io" target="_blank" rel="noreferrer">gabrielchangamire-arch.github.io</a></div>
+  <div>Code: <a href="https://github.com/gabrielchangamire-arch/project-explainers" target="_blank" rel="noreferrer">github.com/gabrielchangamire-arch/project-explainers</a></div>
+</footer>
+
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────────────
+// Routing
+// ─────────────────────────────────────────────────────────────────────
+const SCREENS = ['home', 'aws-task-manager-api', 'distributed-job-queue-system', 'react-task-manager-dashboard'];
+
+function navigate(screen, push = true) {
+  if (!SCREENS.includes(screen)) screen = 'home';
+  document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+  const target = document.getElementById('screen-' + screen);
+  if (target) target.classList.add('active');
+  document.querySelectorAll('.nav-pill').forEach(el => el.classList.toggle('active', el.dataset.screen === screen));
+  if (push) {
+    const hash = screen === 'home' ? '' : '#' + screen;
+    if (location.hash !== hash) history.pushState({ screen }, '', hash || location.pathname);
+  }
+  window.scrollTo({ top: 0, behavior: 'instant' });
+}
+
+function readHashScreen() {
+  const h = location.hash.replace(/^#/, '');
+  return SCREENS.includes(h) ? h : 'home';
+}
+
+window.addEventListener('hashchange', () => navigate(readHashScreen(), false));
+window.addEventListener('popstate', () => navigate(readHashScreen(), false));
+
+// ─────────────────────────────────────────────────────────────────────
+// Flow stepper (per-project)
+// ─────────────────────────────────────────────────────────────────────
+const flowState = {};
+
+function flowStepsFor(project) {
+  return Array.from(document.querySelectorAll('#flow-steps-' + project + ' .flow-step'));
+}
+
+function applyFlow(project, idx) {
+  const steps = flowStepsFor(project);
+  steps.forEach((step, i) => step.classList.toggle('current', i === idx));
+  // Reset diagram for this project, then activate ids for the current step.
+  const svg = document.querySelector('svg[data-project="' + project + '"]');
+  if (!svg) return;
+  svg.querySelectorAll('.arch-box, .arch-line, .arch-arrow').forEach(el => el.classList.remove('active'));
+  const cur = steps[idx];
+  if (!cur) return;
+  const ids = (cur.dataset.active || '').split(/\s+/).filter(Boolean);
+  ids.forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('active'); });
+  const pos = document.getElementById('flow-pos-' + project);
+  if (pos) pos.textContent = String(idx + 1);
+}
+
+function flowNext(project) {
+  const total = flowStepsFor(project).length;
+  if (!total) return;
+  flowState[project] = Math.min((flowState[project] ?? -1) + 1, total - 1);
+  applyFlow(project, flowState[project]);
+}
+function flowPrev(project) {
+  const total = flowStepsFor(project).length;
+  if (!total) return;
+  flowState[project] = Math.max((flowState[project] ?? 0) - 1, 0);
+  applyFlow(project, flowState[project]);
+}
+function flowReset(project) {
+  flowState[project] = -1;
+  const steps = flowStepsFor(project);
+  steps.forEach(s => s.classList.remove('current'));
+  const svg = document.querySelector('svg[data-project="' + project + '"]');
+  if (svg) svg.querySelectorAll('.arch-box, .arch-line, .arch-arrow').forEach(el => el.classList.remove('active'));
+  const pos = document.getElementById('flow-pos-' + project);
+  if (pos) pos.textContent = '0';
+}
+
+// Initial route
+navigate(readHashScreen(), false);
+</script>
+</body>
+</html>
