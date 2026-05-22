@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Project Explainers — Gabriel Changamire</title>
-<meta name="description" content="Interactive walkthroughs of three projects I built: a FastAPI task manager API, a distributed job-queue system, and the React dashboard that consumes the API."/>
+<meta name="description" content="Interactive walkthroughs of four projects I built: a FastAPI task manager API, a distributed job-queue system, the React dashboard that consumes the API, and a full-stack GenAI ad creative studio."/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@500;700;800&display=swap" rel="stylesheet">
@@ -164,6 +164,7 @@ footer a:hover { color: var(--accent); border-color: var(--accent); }
     <a class="nav-pill" data-screen="aws-task-manager-api" href="#aws-task-manager-api">AWS Task API</a>
     <a class="nav-pill" data-screen="distributed-job-queue-system" href="#distributed-job-queue-system">Job Queue</a>
     <a class="nav-pill" data-screen="react-task-manager-dashboard" href="#react-task-manager-dashboard">React Dashboard</a>
+    <a class="nav-pill" data-screen="genai-ad-creative-studio" href="#genai-ad-creative-studio">GenAI Studio</a>
   </div>
 </header>
 
@@ -172,8 +173,8 @@ footer a:hover { color: var(--accent); border-color: var(--accent); }
 <!-- ============================================================ -->
 <section class="screen active" id="screen-home">
   <div class="hero">
-    <h1>Three projects.<em>Under the hood.</em></h1>
-    <p class="lead">Interactive walkthroughs of three projects I built — a FastAPI task manager API, a distributed job queue, and the React dashboard that consumes the API. Each section has an annotated <b>architecture diagram</b>, a tour of the <b>key files</b>, and a <b>real flow</b> traced step-by-step through the code. Pick a project to dive in.</p>
+    <h1>Four projects.<em>Under the hood.</em></h1>
+    <p class="lead">Interactive walkthroughs of four projects I built — a FastAPI task manager API, a distributed job queue, the React dashboard that consumes the API, and a full-stack GenAI ad creative studio. Each section has an annotated <b>architecture diagram</b>, a tour of the <b>key files</b>, and a <b>real flow</b> traced step-by-step through the code. Pick a project to dive in.</p>
   </div>
 
   <div class="project-grid">
@@ -212,6 +213,19 @@ footer a:hover { color: var(--accent); border-color: var(--accent); }
         <span class="chip">Vite</span>
         <span class="chip">Vitest</span>
         <span class="chip">axios</span>
+      </div>
+      <span class="open-cue">Open walkthrough →</span>
+    </a>
+
+    <a class="proj-card" href="#genai-ad-creative-studio" onclick="navigate('genai-ad-creative-studio'); return false;">
+      <div class="tag">◦ project 04 · genai · full-stack</div>
+      <h2>GenAI Ad Creative Studio</h2>
+      <p>FastAPI + React workspace for drafting ad campaign copy from a product brief. Two interchangeable generation modes — a deterministic mock for local development and a provider mode that posts to a configurable LLM endpoint over httpx. SQLite persistence, pytest, and a strict Pydantic schema on the way out.</p>
+      <div class="chips">
+        <span class="chip">FastAPI</span>
+        <span class="chip">React</span>
+        <span class="chip">SQLite</span>
+        <span class="chip">httpx</span>
       </div>
       <span class="open-cue">Open walkthrough →</span>
     </a>
@@ -801,6 +815,208 @@ footer a:hover { color: var(--accent); border-color: var(--accent); }
   </div>
 </section>
 
+<!-- ============================================================ -->
+<!-- PROJECT 4: genai-ad-creative-studio                           -->
+<!-- ============================================================ -->
+<section class="screen" id="screen-genai-ad-creative-studio">
+  <div class="proj-hero">
+    <div>
+      <div class="label">Project 04 · GenAI · Full-stack</div>
+      <h1>GenAI Ad Creative Studio</h1>
+      <p class="tagline">A campaign workspace that turns a product brief into a draft creative set — headlines, descriptions, calls to action, and campaign concepts. The interesting design choice is the swap-in generation layer: a deterministic mock keeps the whole workflow runnable with zero credentials, and the same call site flips to a real LLM provider via httpx the moment two env vars are set. The output always comes back through a strict Pydantic schema, so the rest of the app never has to trust the model.</p>
+      <div class="chips">
+        <span class="chip hot">FastAPI</span>
+        <span class="chip hot">React + Vite</span>
+        <span class="chip">SQLite</span>
+        <span class="chip">Pydantic</span>
+        <span class="chip">httpx</span>
+        <span class="chip">pytest</span>
+        <span class="chip">Mock · Provider modes</span>
+      </div>
+    </div>
+    <div class="actions">
+      <a class="external" href="https://github.com/gabrielchangamire-arch/genai-ad-creative-studio/blob/main/README.md" target="_blank" rel="noreferrer">README ↗</a>
+      <a class="external" href="https://github.com/gabrielchangamire-arch/genai-ad-creative-studio" target="_blank" rel="noreferrer">GitHub ↗</a>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">01 · Architecture</div>
+    <p class="section-sub">The React client owns the workspace UI. FastAPI owns campaign storage and orchestrates generation. The <b>CopyGenerator</b> is a thin strategy layer with two implementations — a local mock and a provider client — that both return the same <code>CreativeSet</code> shape. The LLM provider is dashed because it's optional: the system is fully usable without it.</p>
+    <div class="arch-wrap">
+      <svg class="arch-svg" viewBox="0 0 800 420" data-project="genai-ad-creative-studio">
+        <!-- Browser -->
+        <rect class="arch-box ext" id="gas-ext-browser" x="20" y="180" width="110" height="60" rx="8"/>
+        <text class="arch-label" x="75" y="208" text-anchor="middle">Browser</text>
+        <text class="arch-sub" x="75" y="223" text-anchor="middle">brief · generate</text>
+
+        <!-- React frontend -->
+        <rect class="arch-box" id="gas-app-react" x="170" y="80" width="200" height="90" rx="10"/>
+        <text class="arch-label" x="270" y="108" text-anchor="middle">React + Vite</text>
+        <text class="arch-sub" x="270" y="123" text-anchor="middle">src/App.jsx</text>
+        <text class="arch-sub" x="270" y="137" text-anchor="middle">src/api.js (fetch wrapper)</text>
+        <text class="arch-sub" x="270" y="151" text-anchor="middle">campaign list · brief · creative set</text>
+
+        <!-- FastAPI backend -->
+        <rect class="arch-box" id="gas-app-api" x="170" y="220" width="200" height="130" rx="10"/>
+        <text class="arch-label" x="270" y="248" text-anchor="middle">FastAPI</text>
+        <text class="arch-sub" x="270" y="263" text-anchor="middle">backend/app/main.py</text>
+        <text class="arch-sub" x="270" y="277" text-anchor="middle">POST /api/campaigns</text>
+        <text class="arch-sub" x="270" y="291" text-anchor="middle">GET /api/campaigns</text>
+        <text class="arch-sub" x="270" y="305" text-anchor="middle">POST /api/campaigns/&#123;id&#125;/generate</text>
+        <text class="arch-sub" x="270" y="319" text-anchor="middle">CORS · Pydantic validation</text>
+        <text class="arch-sub" x="270" y="333" text-anchor="middle">502 / 503 on generation errors</text>
+
+        <!-- SQLite -->
+        <rect class="arch-box ext" id="gas-ext-db" x="420" y="80" width="170" height="90" rx="10"/>
+        <text class="arch-label" x="505" y="108" text-anchor="middle">SQLite</text>
+        <text class="arch-sub" x="505" y="123" text-anchor="middle">campaigns table</text>
+        <text class="arch-sub" x="505" y="137" text-anchor="middle">PK: UUID id</text>
+        <text class="arch-sub" x="505" y="151" text-anchor="middle">creative_set as JSON</text>
+
+        <!-- CopyGenerator -->
+        <rect class="arch-box" id="gas-app-gen" x="420" y="220" width="170" height="130" rx="10"/>
+        <text class="arch-label" x="505" y="248" text-anchor="middle">CopyGenerator</text>
+        <text class="arch-sub" x="505" y="263" text-anchor="middle">services/generation.py</text>
+        <text class="arch-sub" x="505" y="278" text-anchor="middle">GENERATION_MODE switch</text>
+        <text class="arch-sub" x="505" y="294" text-anchor="middle">mock → templated set</text>
+        <text class="arch-sub" x="505" y="308" text-anchor="middle">provider → httpx POST</text>
+        <text class="arch-sub" x="505" y="324" text-anchor="middle">returns CreativeSet</text>
+        <text class="arch-sub" x="505" y="338" text-anchor="middle">(Pydantic validated)</text>
+
+        <!-- LLM Provider -->
+        <rect class="arch-box ext" id="gas-ext-provider" x="640" y="220" width="140" height="130" rx="10"/>
+        <text class="arch-label" x="710" y="248" text-anchor="middle">LLM Provider</text>
+        <text class="arch-sub" x="710" y="263" text-anchor="middle">GENAI_PROVIDER_BASE_URL</text>
+        <text class="arch-sub" x="710" y="278" text-anchor="middle">Bearer auth</text>
+        <text class="arch-sub" x="710" y="294" text-anchor="middle">structured output</text>
+        <text class="arch-sub" x="710" y="308" text-anchor="middle">{headlines, descriptions,</text>
+        <text class="arch-sub" x="710" y="322" text-anchor="middle">calls_to_action,</text>
+        <text class="arch-sub" x="710" y="336" text-anchor="middle">campaign_concepts}</text>
+
+        <!-- Lines -->
+        <!-- Browser -> React -->
+        <path class="arch-line" id="gas-line-browser-react" d="M130 195 Q150 175 170 130"/>
+        <polygon class="arch-arrow" id="gas-arrow-browser-react" points="170,130 165,138 173,138"/>
+        <text class="arch-sub" x="118" y="170">load</text>
+
+        <!-- React -> FastAPI -->
+        <path class="arch-line" id="gas-line-react-api" d="M270 170 L270 220"/>
+        <polygon class="arch-arrow" id="gas-arrow-react-api" points="270,220 266,213 274,213"/>
+        <text class="arch-sub" x="278" y="200">fetch /api/...</text>
+
+        <!-- FastAPI -> SQLite -->
+        <path class="arch-line" id="gas-line-api-db" d="M370 245 Q400 175 420 130"/>
+        <polygon class="arch-arrow" id="gas-arrow-api-db" points="420,130 413,134 416,142"/>
+        <text class="arch-sub" x="378" y="180">sqlite3 read/write</text>
+
+        <!-- FastAPI -> CopyGenerator -->
+        <path class="arch-line" id="gas-line-api-gen" d="M370 285 L420 285"/>
+        <polygon class="arch-arrow" id="gas-arrow-api-gen" points="420,285 414,281 414,289"/>
+        <text class="arch-sub" x="375" y="275">create_set()</text>
+
+        <!-- CopyGenerator -> Provider (dashed, optional) -->
+        <path class="arch-line dash" id="gas-line-gen-provider" d="M590 285 L640 285"/>
+        <polygon class="arch-arrow" id="gas-arrow-gen-provider" points="640,285 634,281 634,289"/>
+        <text class="arch-sub" x="592" y="275">httpx (opt)</text>
+      </svg>
+      <div class="arch-legend">
+        <span class="item"><span class="swatch app"></span> in-repo module</span>
+        <span class="item"><span class="swatch ext"></span> external store / service</span>
+        <span class="item"><span class="swatch flow"></span> highlighted in the flow below</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">02 · Key files</div>
+    <p class="section-sub">Backend stays small: a route layer, a store, a generator. The frontend is one screen with three panels — list, brief, creative set — wired through a tiny fetch helper.</p>
+    <div class="files-grid">
+      <div class="file-card">
+        <div class="path">backend/app/main.py</div>
+        <div class="role">Builds the FastAPI app via <code>create_app(settings)</code>, mounts CORS, exposes the four routes, and translates generator failures into <code>503</code> (config) or <code>502</code> (provider) so the client always gets a clean error message.</div>
+      </div>
+      <div class="file-card">
+        <div class="path">backend/app/schemas.py</div>
+        <div class="role">The Pydantic contracts. <code>CampaignCreate</code> validates the brief with field length bounds; <code>CreativeSet</code> defines the four-list output schema. Provider responses are validated against this same model — bad shapes raise <code>GenerationProviderError</code>.</div>
+      </div>
+      <div class="file-card">
+        <div class="path">backend/app/store.py</div>
+        <div class="role">A small <code>CampaignStore</code> that owns the SQLite connection. UUID primary keys, ISO-8601 timestamps, and the creative set is serialized to a JSON column so the row stays self-contained.</div>
+      </div>
+      <div class="file-card">
+        <div class="path">backend/app/services/generation.py</div>
+        <div class="role">The <code>CopyGenerator</code> strategy. Branches on <code>GENERATION_MODE</code>; <code>_mock_creative_set</code> returns a deterministic templated set keyed off the brief, <code>_provider_creative_set</code> POSTs the brief and an output schema to the configured endpoint and validates the response.</div>
+      </div>
+      <div class="file-card">
+        <div class="path">backend/app/config.py</div>
+        <div class="role">Frozen <code>Settings</code> dataclass behind <code>lru_cache</code>. Reads <code>DATABASE_URL</code>, <code>GENERATION_MODE</code>, the three provider vars, and a comma-separated CORS origins list from the environment. Tests construct <code>Settings</code> directly to override.</div>
+      </div>
+      <div class="file-card">
+        <div class="path">frontend/src/App.jsx</div>
+        <div class="role">One workspace screen: campaign rail on the left, brief form in the middle, creative set on the right. <code>useEffect</code> loads the list on mount; <code>handleCreateCampaign</code> and <code>handleGenerate</code> drive the two backend calls and keep local state in sync.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">03 · Flow · brief to creative set</div>
+    <p class="section-sub">Walks one campaign from the empty form to a rendered creative set. Two backend round-trips — one to save the brief, one to generate the copy — and the generation step branches on the configured mode.</p>
+    <div class="flow-wrap">
+      <div class="flow-controls">
+        <button class="flow-btn primary" onclick="flowPrev('genai-ad-creative-studio')">◀ Prev</button>
+        <button class="flow-btn primary" onclick="flowNext('genai-ad-creative-studio')">Step ▶</button>
+        <button class="flow-btn" onclick="flowReset('genai-ad-creative-studio')">Reset</button>
+        <span class="flow-pos">step <span class="now" id="flow-pos-genai-ad-creative-studio">0</span> / 6</span>
+      </div>
+      <div id="flow-steps-genai-ad-creative-studio">
+        <div class="flow-step" data-active="gas-ext-browser gas-line-browser-react gas-arrow-browser-react gas-app-react">
+          <div class="n">1</div>
+          <div class="body">
+            <h4>User fills the brief</h4>
+            <p>Product name, product detail, audience, tone (one of five presets), and an objective. <code>App.jsx</code> holds the form in a single <code>brief</code> state object; the submit handler is the only place that triggers the first network call.</p>
+          </div>
+        </div>
+        <div class="flow-step" data-active="gas-app-react gas-line-react-api gas-arrow-react-api gas-app-api">
+          <div class="n">2</div>
+          <div class="body">
+            <h4>POST /api/campaigns</h4>
+            <p>The <code>createCampaign</code> helper in <code>api.js</code> wraps <code>fetch</code> with JSON headers and a normalized error path. Pydantic's <code>CampaignCreate</code> rejects briefs that miss the length bounds with a <code>422</code> the UI surfaces inline.</p>
+          </div>
+        </div>
+        <div class="flow-step" data-active="gas-app-api gas-line-api-db gas-arrow-api-db gas-ext-db">
+          <div class="n">3</div>
+          <div class="body">
+            <h4>Persist the campaign</h4>
+            <p><code>CampaignStore.create_campaign</code> mints a UUID, writes the row to SQLite with ISO timestamps, then reads it back so the response includes the assigned id. The creative set column starts <code>NULL</code>.</p>
+          </div>
+        </div>
+        <div class="flow-step" data-active="gas-app-react gas-line-react-api gas-arrow-react-api gas-app-api">
+          <div class="n">4</div>
+          <div class="body">
+            <h4>User clicks Generate</h4>
+            <p>From the creative panel, the secondary button POSTs to <code>/api/campaigns/&#123;id&#125;/generate</code>. The route handler loads the campaign, raising <code>404</code> if the id is unknown, then hands the validated brief to the generator.</p>
+          </div>
+        </div>
+        <div class="flow-step" data-active="gas-app-api gas-line-api-gen gas-arrow-api-gen gas-app-gen gas-line-gen-provider gas-arrow-gen-provider gas-ext-provider">
+          <div class="n">5</div>
+          <div class="body">
+            <h4>CopyGenerator picks a mode</h4>
+            <p>In <b>mock</b> mode, the brief gets folded into a templated <code>CreativeSet</code> — three headlines, three descriptions, three CTAs, three concepts — and returns in microseconds. In <b>provider</b> mode, <code>httpx</code> POSTs the brief plus the expected output schema to the configured endpoint with a 20s timeout, and the response is <code>model_validate</code>d back into a <code>CreativeSet</code>. Provider failures raise <code>GenerationProviderError</code> and the route returns <code>502</code>.</p>
+          </div>
+        </div>
+        <div class="flow-step" data-active="gas-app-api gas-line-api-db gas-arrow-api-db gas-ext-db gas-app-react">
+          <div class="n">6</div>
+          <div class="body">
+            <h4>Save and render</h4>
+            <p><code>save_creative_set</code> writes the JSON-serialized set back onto the same row and bumps <code>updated_at</code>. The route returns the full campaign; <code>App.jsx</code> swaps the updated record into its list and the creative panel re-renders four columns of copy.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <footer>
   <div>Companion to <a href="https://gabrielchangamire-arch.github.io" target="_blank" rel="noreferrer">gabrielchangamire-arch.github.io</a></div>
   <div>Code: <a href="https://github.com/gabrielchangamire-arch/project-explainers" target="_blank" rel="noreferrer">github.com/gabrielchangamire-arch/project-explainers</a></div>
@@ -812,7 +1028,7 @@ footer a:hover { color: var(--accent); border-color: var(--accent); }
 // ─────────────────────────────────────────────────────────────────────
 // Routing
 // ─────────────────────────────────────────────────────────────────────
-const SCREENS = ['home', 'aws-task-manager-api', 'distributed-job-queue-system', 'react-task-manager-dashboard'];
+const SCREENS = ['home', 'aws-task-manager-api', 'distributed-job-queue-system', 'react-task-manager-dashboard', 'genai-ad-creative-studio'];
 
 function navigate(screen, push = true) {
   if (!SCREENS.includes(screen)) screen = 'home';
