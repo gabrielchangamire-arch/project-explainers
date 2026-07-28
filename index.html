@@ -4,7 +4,19 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Project Explainers — Gabriel Changamire</title>
-<meta name="description" content="Interactive walkthroughs of four projects I built: a FastAPI task manager API, a distributed job-queue system, the React dashboard that consumes the API, and a full-stack GenAI ad creative studio."/>
+<meta name="description" content="Interactive architecture and code walkthroughs for six projects by Gabriel Changamire, spanning backend, distributed systems, production engineering, frontend, GenAI, and modern C++."/>
+<meta property="og:title" content="Project Explainers — Gabriel Changamire"/>
+<meta property="og:description" content="Six interactive architecture and code walkthroughs. See how each system works under the hood."/>
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="https://gabrielchangamire-arch.github.io/project-explainers/"/>
+<meta property="og:image" content="https://gabrielchangamire-arch.github.io/project-explainers/og.png"/>
+<meta property="og:image:width" content="1536"/>
+<meta property="og:image:height" content="1024"/>
+<meta property="og:image:alt" content="Project Explainers — six systems under the hood"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="Project Explainers — Gabriel Changamire"/>
+<meta name="twitter:description" content="Six interactive architecture and code walkthroughs. See how each system works under the hood."/>
+<meta name="twitter:image" content="https://gabrielchangamire-arch.github.io/project-explainers/og.png"/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@500;700;800&display=swap" rel="stylesheet">
@@ -152,6 +164,21 @@ footer a:hover { color: var(--accent); border-color: var(--accent); }
 /* Note block */
 .note { background: var(--bg-elev); border-left: 3px solid var(--accent); padding: 12px 16px; font-size: 12.5px; color: var(--fg-dim); margin-top: 24px; border-radius: 4px; }
 .note b { color: var(--fg); }
+
+/* CSS-native systems diagrams */
+.system-map-scroll { overflow-x: auto; padding-bottom: 8px; }
+.system-map { min-width: 920px; display: grid; grid-template-columns: repeat(11, minmax(34px, 1fr)); align-items: center; gap: 8px; }
+.system-map + .system-map { margin-top: 18px; }
+.sys-node { min-height: 92px; padding: 14px 10px; border: 1px solid var(--wire); border-radius: 10px; background: var(--bg-elev-2); display: flex; flex-direction: column; justify-content: center; text-align: center; transition: all 0.3s; }
+.sys-node.ext { border-style: dashed; background: var(--bg); }
+.sys-node.active { border-color: var(--accent); background: var(--accent-glow); box-shadow: 0 0 28px rgba(255, 180, 84, 0.08); }
+.sys-node strong { font-size: 11px; font-weight: 500; color: var(--fg); }
+.sys-node small { margin-top: 5px; font-size: 9px; line-height: 1.4; color: var(--fg-dim); }
+.sys-arrow { color: var(--fg-faint); text-align: center; font-size: 20px; transition: color 0.3s; }
+.sys-arrow.active { color: var(--accent); }
+.sys-span-2 { grid-column: span 2; }
+.sys-span-3 { grid-column: span 3; }
+.system-map-caption { margin-top: 14px; color: var(--fg-dim); font-size: 11px; line-height: 1.5; }
 </style>
 </head>
 <body>
@@ -165,6 +192,8 @@ footer a:hover { color: var(--accent); border-color: var(--accent); }
     <a class="nav-pill" data-screen="distributed-job-queue-system" href="#distributed-job-queue-system">Job Queue</a>
     <a class="nav-pill" data-screen="react-task-manager-dashboard" href="#react-task-manager-dashboard">React Dashboard</a>
     <a class="nav-pill" data-screen="genai-ad-creative-studio" href="#genai-ad-creative-studio">GenAI Studio</a>
+    <a class="nav-pill" data-screen="cpp-matching-engine" href="#cpp-matching-engine">C++ Engine</a>
+    <a class="nav-pill" data-screen="fleetpulse" href="#fleetpulse">FleetPulse</a>
   </div>
 </header>
 
@@ -173,8 +202,8 @@ footer a:hover { color: var(--accent); border-color: var(--accent); }
 <!-- ============================================================ -->
 <section class="screen active" id="screen-home">
   <div class="hero">
-    <h1>Four projects.<em>Under the hood.</em></h1>
-    <p class="lead">Interactive walkthroughs of four projects I built — a FastAPI task manager API, a distributed job queue, the React dashboard that consumes the API, and a full-stack GenAI ad creative studio. Each section has an annotated <b>architecture diagram</b>, a tour of the <b>key files</b>, and a <b>real flow</b> traced step-by-step through the code. Pick a project to dive in.</p>
+    <h1>Six projects.<em>Under the hood.</em></h1>
+    <p class="lead">Interactive walkthroughs across backend, distributed systems, frontend, GenAI, production engineering, and modern C++. Each section has an annotated <b>architecture diagram</b>, a tour of the <b>key files</b>, and a <b>real flow</b> traced step-by-step through the code. Pick a project to dive in.</p>
   </div>
 
   <div class="project-grid">
@@ -229,10 +258,36 @@ footer a:hover { color: var(--accent); border-color: var(--accent); }
       </div>
       <span class="open-cue">Open walkthrough →</span>
     </a>
+
+    <a class="proj-card" href="#cpp-matching-engine" onclick="navigate('cpp-matching-engine'); return false;">
+      <div class="tag">◦ project 05 · c++ · systems</div>
+      <h2>C++ Matching Engine</h2>
+      <p>A deterministic C++20 limit order book with price-time priority, bounded concurrent ingestion, fail-closed sequence-gap recovery, differential testing, sanitizers, fuzzing, and measured benchmarks.</p>
+      <div class="chips">
+        <span class="chip">C++20</span>
+        <span class="chip">CMake</span>
+        <span class="chip">GoogleTest</span>
+        <span class="chip">libFuzzer</span>
+      </div>
+      <span class="open-cue">Open walkthrough →</span>
+    </a>
+
+    <a class="proj-card" href="#fleetpulse" onclick="navigate('fleetpulse'); return false;">
+      <div class="tag">◦ project 06 · production engineering</div>
+      <h2>FleetPulse</h2>
+      <p>A local-first Linux fleet reliability platform with crash-safe telemetry, transactional ingestion, Redis Stream workers, SLO observability, controlled failure drills, and evidence behind every claim.</p>
+      <div class="chips">
+        <span class="chip">FastAPI</span>
+        <span class="chip">PostgreSQL</span>
+        <span class="chip">Redis Streams</span>
+        <span class="chip">Kubernetes</span>
+      </div>
+      <span class="open-cue">Open walkthrough →</span>
+    </a>
   </div>
 
   <div class="note">
-    <b>Why these three?</b> They form a self-contained engineering story — backend API, the distributed pattern it can scale into, and the frontend that consumes it. The fourth recent project, <a href="https://gabrielchangamire-arch.github.io/community-compass" target="_blank" rel="noreferrer" style="color: var(--accent); text-decoration: none;">Community Compass</a>, is a finished public-facing app that explains itself.
+    <b>Why these six?</b> Together they show the full range of the work: application layers, distributed boundaries, user-facing delivery, model integration, reliability engineering, and performance-conscious C++. <a href="https://gabrielchangamire-arch.github.io/community-compass" target="_blank" rel="noreferrer" style="color: var(--accent); text-decoration: none;">Community Compass</a> is a finished public-facing app that explains itself.
   </div>
 </section>
 
@@ -1017,6 +1072,261 @@ footer a:hover { color: var(--accent); border-color: var(--accent); }
   </div>
 </section>
 
+<!-- ============================================================ -->
+<!-- PROJECT 5: cpp-matching-engine                               -->
+<!-- ============================================================ -->
+<section class="screen" id="screen-cpp-matching-engine">
+  <div class="proj-hero">
+    <div>
+      <div class="label">Project 05 · C++ · systems engineering</div>
+      <h1>C++ Matching Engine</h1>
+      <p class="tagline">A deterministic C++20 limit order book with price-time priority, integer tick prices, controlled concurrent ingestion, and a verification stack built to challenge correctness rather than merely demonstrate the happy path.</p>
+      <div class="chips">
+        <span class="chip hot">C++20</span>
+        <span class="chip">CMake</span>
+        <span class="chip">GoogleTest</span>
+        <span class="chip">Google Benchmark</span>
+        <span class="chip">ASan · TSan</span>
+        <span class="chip">libFuzzer</span>
+      </div>
+    </div>
+    <div class="actions">
+      <a class="external" href="https://github.com/gabrielchangamire-arch/cpp-matching-engine/blob/main/docs/architecture.md" target="_blank" rel="noreferrer">Architecture ↗</a>
+      <a class="external" href="https://github.com/gabrielchangamire-arch/cpp-matching-engine/blob/main/docs/performance.md" target="_blank" rel="noreferrer">Performance ↗</a>
+      <a class="external" href="https://github.com/gabrielchangamire-arch/cpp-matching-engine" target="_blank" rel="noreferrer">GitHub ↗</a>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">01 · Architecture</div>
+    <p class="section-sub">The order book stays deliberately single-writer. Producers can submit concurrently, but one worker restores explicit ingestion order before touching the core engine. That keeps price-time behavior deterministic without spreading locks through a multi-step match.</p>
+    <div class="arch-wrap">
+      <div class="system-map-scroll" data-project="cpp-matching-engine">
+        <div class="system-map">
+          <div class="arch-box sys-node sys-span-2" id="cme-node-producer"><strong>Producer threads</strong><small>submit(sequence, command)</small></div>
+          <div class="arch-arrow sys-arrow" id="cme-arrow-producer-queue">→</div>
+          <div class="arch-box sys-node sys-span-2" id="cme-node-queue"><strong>Bounded queue</strong><small>condition variables + backpressure</small></div>
+          <div class="arch-arrow sys-arrow" id="cme-arrow-queue-sequencer">→</div>
+          <div class="arch-box sys-node sys-span-2" id="cme-node-sequencer"><strong>Reorder buffer</strong><small>window + gap deadline</small></div>
+          <div class="arch-arrow sys-arrow" id="cme-arrow-sequencer-worker">→</div>
+          <div class="arch-box sys-node sys-span-2" id="cme-node-worker"><strong>Single worker</strong><small>next contiguous sequence only</small></div>
+        </div>
+        <div class="system-map">
+          <div class="arch-box sys-node sys-span-2" id="cme-node-worker-core"><strong>Matching worker</strong><small>exclusive mutation owner</small></div>
+          <div class="arch-arrow sys-arrow" id="cme-arrow-worker-engine">→</div>
+          <div class="arch-box sys-node sys-span-2" id="cme-node-engine"><strong>MatchingEngine</strong><small>fills + trade sequencing</small></div>
+          <div class="arch-arrow sys-arrow" id="cme-arrow-engine-book">→</div>
+          <div class="arch-box sys-node sys-span-2" id="cme-node-book"><strong>OrderBook</strong><small>ordered levels + FIFO lists</small></div>
+          <div class="arch-arrow sys-arrow" id="cme-arrow-book-future">→</div>
+          <div class="arch-box sys-node sys-span-2" id="cme-node-future"><strong>Future result</strong><small>acceptance, error, trades</small></div>
+        </div>
+      </div>
+      <div class="arch-legend">
+        <span class="item"><span class="swatch app"></span> in-process component</span>
+        <span class="item"><span class="swatch flow"></span> active flow step</span>
+      </div>
+      <p class="system-map-caption">Failure policy: if an expected sequence stays absent past the configurable deadline, the facade fails closed, resolves buffered futures with one terminal error, and never executes later commands over the gap.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">02 · Key files</div>
+    <p class="section-sub">The public surface is small; the interesting engineering is concentrated in the matching loop, coordinated book indexes, and the boundary that turns concurrent producers into one deterministic command stream.</p>
+    <div class="files-grid">
+      <div class="file-card">
+        <div class="path">src/matching_engine.cpp</div>
+        <div class="role">Owns order and trade sequences. An incoming limit order repeatedly reads the best opposite order, executes at the resting price, applies partial or complete fills, emits exact trade records, and rests any remainder.</div>
+      </div>
+      <div class="file-card">
+        <div class="path">src/order_book.cpp</div>
+        <div class="role">Coordinates three views: descending bid levels, ascending ask levels, and an average-constant-time active-ID index. FIFO lists provide time priority and stable iterators for cancellation.</div>
+      </div>
+      <div class="file-card">
+        <div class="path">src/concurrent_matching_engine.cpp</div>
+        <div class="role">Restores explicit sequence order, limits reordering to a bounded admission window, owns the one-second default gap deadline, fails closed on missing input, and completes each producer promise.</div>
+      </div>
+      <div class="file-card">
+        <div class="path">include/matching_engine/thread_safe_queue.hpp</div>
+        <div class="role">A bounded generic FIFO with blocking push/pop, deadline-aware pop, close semantics, and condition-variable wakeups. Producers sleep under backpressure; the worker never busy-waits.</div>
+      </div>
+      <div class="file-card">
+        <div class="path">tests/matching_engine_property_test.cpp</div>
+        <div class="role">Runs 12,000 deterministic randomized commands against a deliberately simple independent matcher, comparing every trade field, full depth, best prices, active counts, and the uncrossed-book invariant after every operation.</div>
+      </div>
+      <div class="file-card">
+        <div class="path">fuzz/csv_command_fuzzer.cpp</div>
+        <div class="role">Feeds arbitrary bytes through CSV parsing and command validation under libFuzzer, AddressSanitizer, and UndefinedBehaviorSanitizer. CI adds a short campaign to the 89-test suite.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">03 · Flow · submit a crossing order</div>
+    <p class="section-sub">Follow one concurrently submitted order from producer admission through deterministic sequencing, matching, and its completed future. Use Step / Reset to highlight the active components.</p>
+    <div class="flow-wrap">
+      <div class="flow-controls">
+        <button class="flow-btn primary" onclick="flowPrev('cpp-matching-engine')">◀ Prev</button>
+        <button class="flow-btn primary" onclick="flowNext('cpp-matching-engine')">Step ▶</button>
+        <button class="flow-btn" onclick="flowReset('cpp-matching-engine')">Reset</button>
+        <span class="flow-pos">step <span class="now" id="flow-pos-cpp-matching-engine">0</span> / 6</span>
+      </div>
+      <div id="flow-steps-cpp-matching-engine">
+        <div class="flow-step" data-active="cme-node-producer cme-arrow-producer-queue cme-node-queue">
+          <div class="n">1</div><div class="body"><h4>Admission reserves the sequence</h4><p><code>submit</code> rejects zero, stale, duplicate, or too-distant ingestion sequences under a small state mutex. A valid command owns a promise before entering the bounded queue.</p></div>
+        </div>
+        <div class="flow-step" data-active="cme-node-queue cme-arrow-queue-sequencer cme-node-sequencer">
+          <div class="n">2</div><div class="body"><h4>The queue applies backpressure</h4><p>If capacity is full, the producer sleeps on <code>not_full</code>. The worker pops without spinning and moves out-of-order envelopes into an ordered map.</p></div>
+        </div>
+        <div class="flow-step" data-active="cme-node-sequencer cme-arrow-sequencer-worker cme-node-worker">
+          <div class="n">3</div><div class="body"><h4>The sequencer protects history</h4><p>The worker processes only the next contiguous value. A temporary gap may close before the deadline; a persistent gap stops admission and rejects buffered work rather than silently changing market history.</p></div>
+        </div>
+        <div class="flow-step" data-active="cme-node-worker-core cme-arrow-worker-engine cme-node-engine cme-arrow-engine-book cme-node-book">
+          <div class="n">4</div><div class="body"><h4>The incoming price crosses</h4><p>The engine reads the best opposite order. While prices cross, it fills the smaller remaining quantity at the resting order's price, updating or removing that order through the book's stable index.</p></div>
+        </div>
+        <div class="flow-step" data-active="cme-node-engine cme-node-book cme-arrow-book-future cme-node-future">
+          <div class="n">5</div><div class="body"><h4>Trades become an exact result</h4><p>Each fill receives a monotonic trade ID and sequence. Any incoming remainder rests on its price level; the trade vector moves into the producer's <code>CommandResult</code>.</p></div>
+        </div>
+        <div class="flow-step" data-active="cme-node-producer cme-node-queue cme-node-sequencer cme-node-worker cme-node-worker-core cme-node-engine cme-node-book cme-node-future">
+          <div class="n">6</div><div class="body"><h4>The behavior is challenged from several angles</h4><p>Named examples, exact integration scenarios, a reference model, fuzzing, strict warnings, clang-tidy, ASan/UBSan, TSan, and Release benchmarks all exercise the same library used by the CLI.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- PROJECT 6: fleetpulse                                        -->
+<!-- ============================================================ -->
+<section class="screen" id="screen-fleetpulse">
+  <div class="proj-hero">
+    <div>
+      <div class="label">Project 06 · production engineering · reliability</div>
+      <h1>FleetPulse</h1>
+      <p class="tagline">A local-first Linux fleet reliability and incident-response platform built around durable work, explicit failure behavior, narrow trust boundaries, and evidence-backed claims instead of invented scale.</p>
+      <div class="chips">
+        <span class="chip hot">Python · FastAPI</span>
+        <span class="chip">PostgreSQL</span>
+        <span class="chip">Redis Streams</span>
+        <span class="chip">Nginx · TLS</span>
+        <span class="chip">Prometheus · Grafana</span>
+        <span class="chip">Kubernetes</span>
+      </div>
+    </div>
+    <div class="actions">
+      <a class="external" href="https://github.com/gabrielchangamire-arch/fleetpulse/blob/main/docs/architecture/system.md" target="_blank" rel="noreferrer">Architecture ↗</a>
+      <a class="external" href="https://github.com/gabrielchangamire-arch/fleetpulse/tree/main/evidence" target="_blank" rel="noreferrer">Evidence ↗</a>
+      <a class="external" href="https://github.com/gabrielchangamire-arch/fleetpulse" target="_blank" rel="noreferrer">GitHub ↗</a>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">01 · Architecture</div>
+    <p class="section-sub">Acknowledged telemetry is durable before asynchronous work begins. The PostgreSQL outbox breaks the dangerous coupling between an API commit and Redis availability: a Redis outage delays downstream work, but cannot erase a batch the agent was told succeeded.</p>
+    <div class="arch-wrap">
+      <div class="system-map-scroll" data-project="fleetpulse">
+        <div class="system-map">
+          <div class="arch-box sys-node sys-span-2" id="fp-node-agent"><strong>Linux agent</strong><small>psutil + SQLite spool</small></div>
+          <div class="arch-arrow sys-arrow" id="fp-arrow-agent-edge">→</div>
+          <div class="arch-box sys-node sys-span-2" id="fp-node-edge"><strong>Nginx / TLS</strong><small>limits + correlation IDs</small></div>
+          <div class="arch-arrow sys-arrow" id="fp-arrow-edge-api">→</div>
+          <div class="arch-box sys-node sys-span-2" id="fp-node-api"><strong>FastAPI replicas</strong><small>auth + validation</small></div>
+          <div class="arch-arrow sys-arrow" id="fp-arrow-api-postgres">→</div>
+          <div class="arch-box sys-node sys-span-2 ext" id="fp-node-postgres"><strong>PostgreSQL</strong><small>telemetry + idempotency + outbox</small></div>
+        </div>
+        <div class="system-map">
+          <div class="arch-box sys-node sys-span-2 ext" id="fp-node-outbox"><strong>Outbox rows</strong><small>durable unpublished work</small></div>
+          <div class="arch-arrow sys-arrow" id="fp-arrow-outbox-relay">→</div>
+          <div class="arch-box sys-node sys-span-2" id="fp-node-relay"><strong>Outbox relay</strong><small>publish + retry attempts</small></div>
+          <div class="arch-arrow sys-arrow" id="fp-arrow-relay-redis">→</div>
+          <div class="arch-box sys-node sys-span-2 ext" id="fp-node-redis"><strong>Redis Streams</strong><small>consumer groups + pending work</small></div>
+          <div class="arch-arrow sys-arrow" id="fp-arrow-redis-worker">→</div>
+          <div class="arch-box sys-node sys-span-2" id="fp-node-worker"><strong>Workers</strong><small>idempotent transitions + DLQ</small></div>
+        </div>
+        <div class="system-map">
+          <div class="arch-box sys-node sys-span-3" id="fp-node-state"><strong>Fleet + incident state</strong><small>summaries, thresholds, bounded retries</small></div>
+          <div class="arch-arrow sys-arrow" id="fp-arrow-state-observe">→</div>
+          <div class="arch-box sys-node sys-span-3 ext" id="fp-node-observe"><strong>Prometheus · Grafana · Alertmanager</strong><small>SLO indicators, dashboards, local alert routes</small></div>
+          <div class="arch-arrow sys-arrow" id="fp-arrow-observe-assistant">→</div>
+          <div class="arch-box sys-node sys-span-3 ext" id="fp-node-assistant"><strong>Optional incident assistant</strong><small>redacted, cited, read-only, no execution</small></div>
+        </div>
+      </div>
+      <div class="arch-legend">
+        <span class="item"><span class="swatch app"></span> application process</span>
+        <span class="item"><span class="swatch ext"></span> state or optional boundary</span>
+        <span class="item"><span class="swatch flow"></span> active flow step</span>
+      </div>
+      <p class="system-map-caption">Network boundary: Nginx is the intended ingress. PostgreSQL and Redis stay private; observability binds locally or remains ClusterIP; the optional assistant has no operational credentials or remediation endpoint.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">02 · Key files</div>
+    <p class="section-sub">FleetPulse is intentionally more than service code. The runbooks, architecture decisions, threat model, SLOs, failure drills, and committed evidence are part of the deliverable because operational behavior is a feature.</p>
+    <div class="files-grid">
+      <div class="file-card">
+        <div class="path">src/fleetpulse/agent/spool.py</div>
+        <div class="role">A bounded SQLite spool keeps batches across restarts. Age and size limits prevent unbounded disk growth; explicit metrics record drops when the safety bounds are exhausted.</div>
+      </div>
+      <div class="file-card">
+        <div class="path">src/fleetpulse/agent/client.py</div>
+        <div class="role">Sends stable batch IDs over HTTPS with request deadlines, capped exponential backoff, and full jitter. Replays preserve the same idempotency identity instead of manufacturing new work.</div>
+      </div>
+      <div class="file-card">
+        <div class="path">src/fleetpulse/api/routes.py</div>
+        <div class="role">Authenticates and validates ingestion, then commits telemetry, the idempotency outcome, and an outbox event in one PostgreSQL transaction before acknowledging the agent.</div>
+      </div>
+      <div class="file-card">
+        <div class="path">src/fleetpulse/worker/relay.py</div>
+        <div class="role">Finds unpublished outbox rows, publishes durable work to Redis Streams, records attempts, and can retry after Redis recovery without asking the API to recreate acknowledged data.</div>
+      </div>
+      <div class="file-card">
+        <div class="path">src/fleetpulse/worker/main.py</div>
+        <div class="role">Runs consumer-group work with pending-message reclaim, bounded retry, dead-letter handling, and idempotent database transitions for fleet summaries and incident state.</div>
+      </div>
+      <div class="file-card">
+        <div class="path">evidence/INDEX.md + docs/runbooks/</div>
+        <div class="role">Connects every reliability, performance, recovery, assistant-safety, and supply-chain claim to repeatable commands and preserved raw results. Targets, measurements, and projections stay explicitly labeled.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">03 · Flow · durable telemetry to incident state</div>
+    <p class="section-sub">Trace one telemetry batch through a healthy run—and see why acknowledged work survives the failure of an asynchronous dependency.</p>
+    <div class="flow-wrap">
+      <div class="flow-controls">
+        <button class="flow-btn primary" onclick="flowPrev('fleetpulse')">◀ Prev</button>
+        <button class="flow-btn primary" onclick="flowNext('fleetpulse')">Step ▶</button>
+        <button class="flow-btn" onclick="flowReset('fleetpulse')">Reset</button>
+        <span class="flow-pos">step <span class="now" id="flow-pos-fleetpulse">0</span> / 7</span>
+      </div>
+      <div id="flow-steps-fleetpulse">
+        <div class="flow-step" data-active="fp-node-agent">
+          <div class="n">1</div><div class="body"><h4>Collect and spool locally</h4><p>The container agent samples bounded CPU, memory, disk, process, socket, and network telemetry with <code>psutil</code>. It batches samples under a stable UUID and writes the batch to SQLite before attempting delivery.</p></div>
+        </div>
+        <div class="flow-step" data-active="fp-node-agent fp-arrow-agent-edge fp-node-edge fp-arrow-edge-api fp-node-api">
+          <div class="n">2</div><div class="body"><h4>Cross the only intended ingress</h4><p>Nginx terminates local TLS, constrains the request, attaches or propagates a correlation ID, and load-balances to FastAPI. The API authenticates the agent and validates the bounded payload.</p></div>
+        </div>
+        <div class="flow-step" data-active="fp-node-api fp-arrow-api-postgres fp-node-postgres fp-node-outbox">
+          <div class="n">3</div><div class="body"><h4>Commit the durable boundary</h4><p>One PostgreSQL transaction writes the telemetry batch, its idempotency outcome, and an outbox row. Only after commit does the API acknowledge success; replaying the UUID returns the original outcome without duplicate telemetry.</p></div>
+        </div>
+        <div class="flow-step" data-active="fp-node-outbox fp-arrow-outbox-relay fp-node-relay fp-arrow-relay-redis fp-node-redis">
+          <div class="n">4</div><div class="body"><h4>Publish asynchronous work</h4><p>The relay publishes unsent outbox rows to a Redis Stream. If Redis is unavailable, the row remains durable in PostgreSQL and a later relay attempt resumes—processing is delayed, not lost.</p></div>
+        </div>
+        <div class="flow-step" data-active="fp-node-redis fp-arrow-redis-worker fp-node-worker fp-node-state">
+          <div class="n">5</div><div class="body"><h4>Process with recovery semantics</h4><p>A consumer-group worker performs an idempotent transition, updates fleet summaries, and evaluates thresholds. It acknowledges only completed jobs; abandoned pending work can be reclaimed, and bounded failures reach a dead-letter stream.</p></div>
+        </div>
+        <div class="flow-step" data-active="fp-node-state fp-arrow-state-observe fp-node-observe">
+          <div class="n">6</div><div class="body"><h4>Observe service and fleet health</h4><p>Prometheus scrapes bounded-cardinality indicators, Grafana visualizes SLO health, and Alertmanager routes locally testable alerts. Controlled Redis and service failures verify both detection and recovery behavior.</p></div>
+        </div>
+        <div class="flow-step" data-active="fp-node-state fp-node-observe fp-arrow-observe-assistant fp-node-assistant">
+          <div class="n">7</div><div class="body"><h4>Optional analysis remains read-only</h4><p>An operator may send selected evidence to the disabled-by-default assistant. Secrets are redacted, every claim must cite supplied evidence, unsupported output abstains, and even an approved proposal has no execution path.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <footer>
   <div>Companion to <a href="https://gabrielchangamire-arch.github.io" target="_blank" rel="noreferrer">gabrielchangamire-arch.github.io</a></div>
   <div>Code: <a href="https://github.com/gabrielchangamire-arch/project-explainers" target="_blank" rel="noreferrer">github.com/gabrielchangamire-arch/project-explainers</a></div>
@@ -1028,7 +1338,7 @@ footer a:hover { color: var(--accent); border-color: var(--accent); }
 // ─────────────────────────────────────────────────────────────────────
 // Routing
 // ─────────────────────────────────────────────────────────────────────
-const SCREENS = ['home', 'aws-task-manager-api', 'distributed-job-queue-system', 'react-task-manager-dashboard', 'genai-ad-creative-studio'];
+const SCREENS = ['home', 'aws-task-manager-api', 'distributed-job-queue-system', 'react-task-manager-dashboard', 'genai-ad-creative-studio', 'cpp-matching-engine', 'fleetpulse'];
 
 function navigate(screen, push = true) {
   if (!SCREENS.includes(screen)) screen = 'home';
@@ -1064,9 +1374,9 @@ function applyFlow(project, idx) {
   const steps = flowStepsFor(project);
   steps.forEach((step, i) => step.classList.toggle('current', i === idx));
   // Reset diagram for this project, then activate ids for the current step.
-  const svg = document.querySelector('svg[data-project="' + project + '"]');
-  if (!svg) return;
-  svg.querySelectorAll('.arch-box, .arch-line, .arch-arrow').forEach(el => el.classList.remove('active'));
+  const diagram = document.querySelector('[data-project="' + project + '"]');
+  if (!diagram) return;
+  diagram.querySelectorAll('.arch-box, .arch-line, .arch-arrow').forEach(el => el.classList.remove('active'));
   const cur = steps[idx];
   if (!cur) return;
   const ids = (cur.dataset.active || '').split(/\s+/).filter(Boolean);
@@ -1091,8 +1401,8 @@ function flowReset(project) {
   flowState[project] = -1;
   const steps = flowStepsFor(project);
   steps.forEach(s => s.classList.remove('current'));
-  const svg = document.querySelector('svg[data-project="' + project + '"]');
-  if (svg) svg.querySelectorAll('.arch-box, .arch-line, .arch-arrow').forEach(el => el.classList.remove('active'));
+  const diagram = document.querySelector('[data-project="' + project + '"]');
+  if (diagram) diagram.querySelectorAll('.arch-box, .arch-line, .arch-arrow').forEach(el => el.classList.remove('active'));
   const pos = document.getElementById('flow-pos-' + project);
   if (pos) pos.textContent = '0';
 }
