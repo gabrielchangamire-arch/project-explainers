@@ -1,6 +1,6 @@
 # project-explainers
 
-Interactive walkthroughs of six production-shaped projects I built, spanning backend, distributed systems, frontend, GenAI, production engineering, and modern C++. Single static HTML file, no framework.
+Interactive walkthroughs of seven production-shaped projects I built, spanning backend, distributed systems, frontend, GenAI, production engineering, modern C++, and Solana. Single static HTML file, no framework.
 
 **Live:** https://gabrielchangamire-arch.github.io/project-explainers/
 
@@ -12,6 +12,7 @@ Interactive walkthroughs of six production-shaped projects I built, spanning bac
 - [#genai-ad-creative-studio](https://gabrielchangamire-arch.github.io/project-explainers/#genai-ad-creative-studio) — FastAPI + React creative workspace with mock/provider generation modes.
 - [#cpp-matching-engine](https://gabrielchangamire-arch.github.io/project-explainers/#cpp-matching-engine) — C++20 price-time matching, deterministic concurrent ingestion, differential testing, fuzzing, and benchmarks.
 - [#fleetpulse](https://gabrielchangamire-arch.github.io/project-explainers/#fleetpulse) — Linux fleet telemetry, durable ingestion, stream workers, SLOs, and controlled recovery drills.
+- [#solana-developer-passport](https://gabrielchangamire-arch.github.io/project-explainers/#solana-developer-passport) — Rust/Anchor Passport and Milestone PDAs, Wallet Standard signing, authority constraints, LiteSVM security tests, and live devnet evidence.
 
 Companion to the portfolio at [gabrielchangamire-arch.github.io](https://gabrielchangamire-arch.github.io). Each card on the portfolio deep-links into the matching section here.
 

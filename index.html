@@ -4,18 +4,18 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Project Explainers — Gabriel Changamire</title>
-<meta name="description" content="Interactive architecture and code walkthroughs for six projects by Gabriel Changamire, spanning backend, distributed systems, production engineering, frontend, GenAI, and modern C++."/>
+<meta name="description" content="Interactive architecture and code walkthroughs for seven projects by Gabriel Changamire, spanning backend, distributed systems, production engineering, frontend, GenAI, modern C++, and Solana."/>
 <meta property="og:title" content="Project Explainers — Gabriel Changamire"/>
-<meta property="og:description" content="Six interactive architecture and code walkthroughs. See how each system works under the hood."/>
+<meta property="og:description" content="Seven interactive architecture and code walkthroughs. See how each system works under the hood."/>
 <meta property="og:type" content="website"/>
 <meta property="og:url" content="https://gabrielchangamire-arch.github.io/project-explainers/"/>
 <meta property="og:image" content="https://gabrielchangamire-arch.github.io/project-explainers/og.png"/>
 <meta property="og:image:width" content="1536"/>
 <meta property="og:image:height" content="1024"/>
-<meta property="og:image:alt" content="Project Explainers — six systems under the hood"/>
+<meta property="og:image:alt" content="Project Explainers — systems under the hood"/>
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:title" content="Project Explainers — Gabriel Changamire"/>
-<meta name="twitter:description" content="Six interactive architecture and code walkthroughs. See how each system works under the hood."/>
+<meta name="twitter:description" content="Seven interactive architecture and code walkthroughs. See how each system works under the hood."/>
 <meta name="twitter:image" content="https://gabrielchangamire-arch.github.io/project-explainers/og.png"/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -194,6 +194,7 @@ footer a:hover { color: var(--accent); border-color: var(--accent); }
     <a class="nav-pill" data-screen="genai-ad-creative-studio" href="#genai-ad-creative-studio">GenAI Studio</a>
     <a class="nav-pill" data-screen="cpp-matching-engine" href="#cpp-matching-engine">C++ Engine</a>
     <a class="nav-pill" data-screen="fleetpulse" href="#fleetpulse">FleetPulse</a>
+    <a class="nav-pill" data-screen="solana-developer-passport" href="#solana-developer-passport">Solana Passport</a>
   </div>
 </header>
 
@@ -202,7 +203,7 @@ footer a:hover { color: var(--accent); border-color: var(--accent); }
 <!-- ============================================================ -->
 <section class="screen active" id="screen-home">
   <div class="hero">
-    <h1>Six projects.<em>Under the hood.</em></h1>
+    <h1>Seven projects.<em>Under the hood.</em></h1>
     <p class="lead">Interactive walkthroughs across backend, distributed systems, frontend, GenAI, production engineering, and modern C++. Each section has an annotated <b>architecture diagram</b>, a tour of the <b>key files</b>, and a <b>real flow</b> traced step-by-step through the code. Pick a project to dive in.</p>
   </div>
 
@@ -284,10 +285,23 @@ footer a:hover { color: var(--accent); border-color: var(--accent); }
       </div>
       <span class="open-cue">Open walkthrough →</span>
     </a>
+
+    <a class="proj-card" href="#solana-developer-passport" onclick="navigate('solana-developer-passport'); return false;">
+      <div class="tag">◦ project 07 · solana · blockchain</div>
+      <h2>Solana Developer Passport</h2>
+      <p>A live devnet portfolio where learners connect a Wallet Standard wallet, create an authority-owned Passport PDA, and record bounded milestone evidence through a Rust/Anchor program.</p>
+      <div class="chips">
+        <span class="chip">Rust</span>
+        <span class="chip">Anchor</span>
+        <span class="chip">Solana Kit</span>
+        <span class="chip">React</span>
+      </div>
+      <span class="open-cue">Open walkthrough →</span>
+    </a>
   </div>
 
   <div class="note">
-    <b>Why these six?</b> Together they show the full range of the work: application layers, distributed boundaries, user-facing delivery, model integration, reliability engineering, and performance-conscious C++. <a href="https://gabrielchangamire-arch.github.io/community-compass" target="_blank" rel="noreferrer" style="color: var(--accent); text-decoration: none;">Community Compass</a> is a finished public-facing app that explains itself.
+    <b>Why these seven?</b> Together they show the full range of the work: application layers, distributed boundaries, user-facing delivery, model integration, reliability engineering, performance-conscious C++, and authority-safe on-chain state. <a href="https://gabrielchangamire-arch.github.io/community-compass" target="_blank" rel="noreferrer" style="color: var(--accent); text-decoration: none;">Community Compass</a> is a finished public-facing app that explains itself.
   </div>
 </section>
 
@@ -1327,6 +1341,133 @@ footer a:hover { color: var(--accent); border-color: var(--accent); }
   </div>
 </section>
 
+<!-- ============================================================ -->
+<!-- PROJECT 7: solana-developer-passport                         -->
+<!-- ============================================================ -->
+<section class="screen" id="screen-solana-developer-passport">
+  <div class="proj-hero">
+    <div>
+      <div class="label">Project 07 · Solana · on-chain systems</div>
+      <h1>Solana Developer Passport</h1>
+      <p class="tagline">A verifiable learning portfolio deployed to Solana devnet. A browser wallet remains the authority, a Rust/Anchor program owns the rules, and deterministic Program Derived Addresses make each passport and milestone independently discoverable without a centralized database.</p>
+      <div class="chips">
+        <span class="chip hot">Rust · Anchor</span>
+        <span class="chip">Solana devnet</span>
+        <span class="chip">Program Derived Addresses</span>
+        <span class="chip">TypeScript · React</span>
+        <span class="chip">Solana Kit</span>
+        <span class="chip">Wallet Standard</span>
+        <span class="chip">LiteSVM</span>
+      </div>
+    </div>
+    <div class="actions">
+      <a class="external" href="https://explorer.solana.com/address/AeTzaLcDfnov1q64W2GPEupKh427cDnUCW5NbKR9q2Ck?cluster=devnet" target="_blank" rel="noreferrer">Program ↗</a>
+      <a class="external" href="https://explorer.solana.com/address/CUQG45g65XCuvxwUjjssGQAboDTuGsCU6PLzNMrjzn5k?cluster=devnet" target="_blank" rel="noreferrer">Passport PDA ↗</a>
+      <a class="external" href="https://github.com/gabrielchangamire-arch/solana-developer-passport" target="_blank" rel="noreferrer">GitHub ↗</a>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">01 · Architecture</div>
+    <p class="section-sub">The frontend can read any address without a wallet. Writes are different: the connected wallet signs, Anchor verifies that signer against deterministic PDA seeds, and only then does the program create or mutate state. Private keys never enter the application.</p>
+    <div class="arch-wrap">
+      <div class="system-map-scroll" data-project="solana-developer-passport">
+        <div class="system-map">
+          <div class="arch-box sys-node sys-span-2 ext" id="sdp-node-wallet"><strong>Browser wallet</strong><small>Wallet Standard signer + fee payer</small></div>
+          <div class="arch-arrow sys-arrow" id="sdp-arrow-wallet-app">→</div>
+          <div class="arch-box sys-node sys-span-2" id="sdp-node-app"><strong>React dApp</strong><small>Solana Kit reads + instruction builders</small></div>
+          <div class="arch-arrow sys-arrow" id="sdp-arrow-app-rpc">→</div>
+          <div class="arch-box sys-node sys-span-2 ext" id="sdp-node-rpc"><strong>Devnet RPC</strong><small>submit, confirm, fetch accounts</small></div>
+          <div class="arch-arrow sys-arrow" id="sdp-arrow-rpc-program">→</div>
+          <div class="arch-box sys-node sys-span-2" id="sdp-node-program"><strong>Anchor program</strong><small>signer + seeds + bounds + ownership</small></div>
+        </div>
+        <div class="system-map">
+          <div class="arch-box sys-node sys-span-2 ext" id="sdp-node-authority"><strong>Authority address</strong><small>public key, never secret material</small></div>
+          <div class="arch-arrow sys-arrow" id="sdp-arrow-authority-passport">→</div>
+          <div class="arch-box sys-node sys-span-2 ext" id="sdp-node-passport"><strong>Passport PDA</strong><small>[&quot;passport&quot;, authority]</small></div>
+          <div class="arch-arrow sys-arrow" id="sdp-arrow-passport-milestone">→</div>
+          <div class="arch-box sys-node sys-span-2 ext" id="sdp-node-milestone"><strong>Milestone PDA</strong><small>[&quot;milestone&quot;, passport, id]</small></div>
+          <div class="arch-arrow sys-arrow" id="sdp-arrow-milestone-explorer">→</div>
+          <div class="arch-box sys-node sys-span-2 ext" id="sdp-node-explorer"><strong>Solana Explorer</strong><small>independent public verification</small></div>
+        </div>
+      </div>
+      <div class="arch-legend">
+        <span class="item"><span class="swatch app"></span> application or program logic</span>
+        <span class="item"><span class="swatch ext"></span> wallet, network, or on-chain account</span>
+        <span class="item"><span class="swatch flow"></span> active transaction step</span>
+      </div>
+      <p class="system-map-caption">Account model: one Passport PDA per authority stores identity metadata and a milestone count. Each evidence item lives in its own fixed-capacity Milestone PDA, avoiding repeated reallocation of one growing account and making duplicates impossible at the address level.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">02 · Key files and trust boundaries</div>
+    <p class="section-sub">The client constructs the same deterministic addresses that the program validates, but the client is never trusted. All authority and size checks are repeated on-chain before state changes.</p>
+    <div class="files-grid">
+      <div class="file-card">
+        <div class="path">programs/developer-passport/src/lib.rs</div>
+        <div class="role">Defines the deployed instruction surface: initialize a passport, record a milestone, update evidence, close a milestone, and close an empty passport. The declared program ID matches the live devnet account.</div>
+      </div>
+      <div class="file-card">
+        <div class="path">src/instructions/initialize_passport.rs</div>
+        <div class="role">Requires a signing authority, pays rent from that signer, derives the only valid Passport PDA from <code>[passport, authority]</code>, stores the bump, and rejects empty or oversized display names.</div>
+      </div>
+      <div class="file-card">
+        <div class="path">src/instructions/record_milestone.rs</div>
+        <div class="role">Uses <code>has_one</code> and seed constraints to bind the Passport to its authority. The milestone ID becomes part of the PDA, while bounded title and evidence fields prevent account-size overflow.</div>
+      </div>
+      <div class="file-card">
+        <div class="path">src/state.rs + constants.rs</div>
+        <div class="role">Calculates exact fixed account capacity, including Anchor discriminators and Borsh string prefixes. Display names cap at 32 bytes, titles at 64, and evidence URIs at 200.</div>
+      </div>
+      <div class="file-card">
+        <div class="path">apps/web/src/lib/passport.ts</div>
+        <div class="role">Derives PDAs, Borsh-encodes instruction data, supplies Wallet Standard signer metadata, fetches base64 account data over RPC, and decodes Passport state without giving the application custody of keys.</div>
+      </div>
+      <div class="file-card">
+        <div class="path">programs/developer-passport/tests/passport.rs</div>
+        <div class="role">Loads the compiled SBF program into LiteSVM and proves successful creation plus rejection of unauthorized writers, oversized names, and duplicate milestone PDAs. Live integration tests separately read the deployed accounts.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">03 · Flow · wallet approval to public proof</div>
+    <p class="section-sub">Follow a learner from wallet discovery through a signed transaction and back to a decoded, Explorer-verifiable milestone. Use Step / Reset to highlight each boundary.</p>
+    <div class="flow-wrap">
+      <div class="flow-controls">
+        <button class="flow-btn primary" onclick="flowPrev('solana-developer-passport')">◀ Prev</button>
+        <button class="flow-btn primary" onclick="flowNext('solana-developer-passport')">Step ▶</button>
+        <button class="flow-btn" onclick="flowReset('solana-developer-passport')">Reset</button>
+        <span class="flow-pos">step <span class="now" id="flow-pos-solana-developer-passport">0</span> / 6</span>
+      </div>
+      <div id="flow-steps-solana-developer-passport">
+        <div class="flow-step" data-active="sdp-node-wallet sdp-arrow-wallet-app sdp-node-app">
+          <div class="n">1</div><div class="body"><h4>Discover, connect, and preserve custody</h4><p>The Wallet Standard plugin discovers compatible browser wallets. Connecting exposes a public account and transaction signer—not a seed phrase or raw private key. Disconnecting removes the application session.</p></div>
+        </div>
+        <div class="flow-step" data-active="sdp-node-authority sdp-arrow-authority-passport sdp-node-passport sdp-node-app">
+          <div class="n">2</div><div class="body"><h4>Derive the learner's unique Passport address</h4><p>The client combines the constant <code>passport</code> seed with the authority public key and program ID. No server allocates IDs, and the same inputs always produce the same PDA.</p></div>
+        </div>
+        <div class="flow-step" data-active="sdp-node-wallet sdp-node-app sdp-arrow-app-rpc sdp-node-rpc">
+          <div class="n">3</div><div class="body"><h4>Build and approve the transaction</h4><p>The client Borsh-encodes the Anchor discriminator and bounded fields, adds the authority signer plus System Program and PDA accounts, and hands the complete transaction to the wallet for explicit approval.</p></div>
+        </div>
+        <div class="flow-step" data-active="sdp-node-rpc sdp-arrow-rpc-program sdp-node-program sdp-node-authority sdp-node-passport">
+          <div class="n">4</div><div class="body"><h4>Anchor revalidates every claim</h4><p>The program checks that the authority signed, the Passport embeds that authority, the supplied PDA matches the expected seeds and bump, and the input fits the allocated account. Client-side correctness alone is never sufficient.</p></div>
+        </div>
+        <div class="flow-step" data-active="sdp-node-program sdp-node-passport sdp-arrow-passport-milestone sdp-node-milestone">
+          <div class="n">5</div><div class="body"><h4>Record evidence in a separate Milestone PDA</h4><p>The milestone ID joins the Passport key in a second deterministic address. Creating the same ID twice collides with the existing PDA and fails; a successful write stores title, evidence URI, timestamp, authority, and bump, then increments the Passport count.</p></div>
+        </div>
+        <div class="flow-step" data-active="sdp-node-app sdp-node-rpc sdp-node-passport sdp-node-milestone sdp-arrow-milestone-explorer sdp-node-explorer">
+          <div class="n">6</div><div class="body"><h4>Read back and verify independently</h4><p>The React client fetches and decodes the account over devnet RPC. Explorer links expose the program, Passport PDA, Milestone PDA, and both creation transactions so the portfolio's core claims can be checked without trusting the UI.</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="note">
+      <b>Live evidence:</b> program <a href="https://explorer.solana.com/address/AeTzaLcDfnov1q64W2GPEupKh427cDnUCW5NbKR9q2Ck?cluster=devnet" target="_blank" rel="noreferrer" style="color: var(--accent); text-decoration: none;">AeTza…q2Ck</a>, Passport <a href="https://explorer.solana.com/address/CUQG45g65XCuvxwUjjssGQAboDTuGsCU6PLzNMrjzn5k?cluster=devnet" target="_blank" rel="noreferrer" style="color: var(--accent); text-decoration: none;">CUQG…zn5k</a>, milestone <a href="https://explorer.solana.com/address/Fxfascpz5bEjTtqXthWvDUTmf9BmCsqDKLNgyXBuQMcv?cluster=devnet" target="_blank" rel="noreferrer" style="color: var(--accent); text-decoration: none;">Fxfa…QMcv</a>, and the <a href="https://explorer.solana.com/tx/32TcKRCo2QbUp32jJNrZLAnAnJFdFrVGvVZ714eVm6hW6kEzb6e5spYLEedCSoNV8knrPKhTneZQ7NRzWgNrLKh9?cluster=devnet" target="_blank" rel="noreferrer" style="color: var(--accent); text-decoration: none;">confirmed milestone transaction</a>.
+    </div>
+  </div>
+</section>
+
 <footer>
   <div>Companion to <a href="https://gabrielchangamire-arch.github.io" target="_blank" rel="noreferrer">gabrielchangamire-arch.github.io</a></div>
   <div>Code: <a href="https://github.com/gabrielchangamire-arch/project-explainers" target="_blank" rel="noreferrer">github.com/gabrielchangamire-arch/project-explainers</a></div>
@@ -1338,7 +1479,7 @@ footer a:hover { color: var(--accent); border-color: var(--accent); }
 // ─────────────────────────────────────────────────────────────────────
 // Routing
 // ─────────────────────────────────────────────────────────────────────
-const SCREENS = ['home', 'aws-task-manager-api', 'distributed-job-queue-system', 'react-task-manager-dashboard', 'genai-ad-creative-studio', 'cpp-matching-engine', 'fleetpulse'];
+const SCREENS = ['home', 'aws-task-manager-api', 'distributed-job-queue-system', 'react-task-manager-dashboard', 'genai-ad-creative-studio', 'cpp-matching-engine', 'fleetpulse', 'solana-developer-passport'];
 
 function navigate(screen, push = true) {
   if (!SCREENS.includes(screen)) screen = 'home';
